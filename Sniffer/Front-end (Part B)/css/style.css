@@ -115,6 +115,11 @@ input, select, textarea {
   font-size: 1rem;
 }
 
+/* Force hidden attribute to always override any display property set by CSS */
+[hidden] {
+  display: none !important;
+}
+
 /* ---------- Typography Scale ---------- */
 h1, h2, h3, h4 {
   font-family: var(--font-display);
@@ -521,6 +526,7 @@ textarea.form-control {
 }
 
 .footer-brand {
+  align-items: center;
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.2rem;

@@ -50,8 +50,13 @@ document.addEventListener('DOMContentLoaded', function () {
       card.setAttribute('aria-label', 'View match: ' + (dog.name || 'Dog'));
 
       card.innerHTML = `
-        <div class="match-card-avatar" aria-hidden="true">${emoji}</div>
-        <div class="match-card-body">
+        <div class="match-card-avatar" aria-hidden="true">
+        ${dog.photo
+          ? `<img src="${escapeHTML(dog.photo)}" alt="${escapeHTML(dog.name || 'Dog')}" style="width:100%;height:100%;object-fit:cover;" />`
+          : emoji
+          }
+      </div>
+      <div class="match-card-body">
           <div class="match-card-name">${escapeHTML(dog.name || 'Unknown')}</div>
           <div class="match-card-meta">
             ${escapeHTML(dog.breed || 'Mixed')} &bull; ${escapeHTML(user.location || '')}
@@ -82,8 +87,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     modalContent.innerHTML = `
       <div class="modal-dog-header">
-        <div class="modal-avatar" aria-hidden="true">${emoji}</div>
-        <div class="modal-dog-info">
+      <div class="modal-avatar" aria-hidden="true">
+      ${dog.photo
+      ? `<img src="${escapeHTML(dog.photo)}" alt="${escapeHTML(dog.name || 'Dog')}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`
+      : emoji
+      }
+      </div>
+      <div class="modal-dog-info">
           <h2 id="match-detail-title">${escapeHTML(dog.name || 'Your Match')}</h2>
           <p>${escapeHTML(dog.breed || 'Dog')} &bull; ${escapeHTML(dog.age || '?')} yrs &bull; ${escapeHTML(user.location || '')}</p>
         </div>
@@ -106,8 +116,10 @@ document.addEventListener('DOMContentLoaded', function () {
       <div class="modal-section">
         <div class="modal-section-title">Contact</div>
         <div class="modal-contact-box">
-          <span aria-hidden="true">📞</span>
-          <span>${escapeHTML(user.phone || 'Not available')}</span>
+        <div aria-hidden="true">
+        <img src="../images/contact.png" alt="Phone icon" style="width:30px; height:30px;" />
+        </div>
+        <span>${escapeHTML(user.phone || 'Not available')}</span>
         </div>
       </div>
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Log In – Sniffer</title>
+  <title>Sniffer || Log In</title>
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/auth.css" />
 </head>
@@ -13,7 +13,7 @@
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="container">
       <a href="login.html" class="navbar-brand" aria-label="Sniffer home">
-        <span class="brand-paw" aria-hidden="true">🐾</span>
+        <span class="brand-paw" aria-hidden="true"><img src="../images/heart-paw-yellow.png" alt="Sniffer paw icon" class="brand-logo"/></span>
         Sniffer
       </a>
       <!-- No full nav on auth pages — keep it clean -->
@@ -24,10 +24,12 @@
   <main class="page-content auth-page" id="main-content">
     <div class="auth-wrapper animate-in">
 
+      <!--
       <div class="auth-decoration" aria-hidden="true">
         <span class="paw-lg">🐾</span>
         <span class="paw-sm">🐾</span>
       </div>
+    -->
 
       <div class="auth-card card">
         <div class="card-body">
@@ -91,16 +93,15 @@
 
           </form>
 
-          <!-- Sign up link -->
+        <div>
           <p class="auth-switch">
-            Don't have an account?
-            <a href="signup.html">Sign up for free</a>
+          Don't have an account?
+          <a href="signup.html">Sign up for free</a>
+          <br />
+          Forgot your password?
+          <a href="reset_password.html">Reset it here</a>
           </p>
-
-
-          <p class="forgot-password">
-            <a href="forgot-password.html">Forgot your password?</a>
-          </p>
+        </div>
 
         </div>
       </div>
@@ -109,14 +110,17 @@
   </main>
 
   <!-- ===== FOOTER ===== -->
-  <footer class="footer">
-    <div class="container">
-      <span class="footer-brand">Sniffer</span>
-    </div>
-    <div class="container">
-      <p class="footer-copy">&copy; Copyright © 2026 Sniffer. All rights reserved.</p>
-    </div>
-  </footer>
+<footer class="footer">
+  <div class="container">
+
+    <span class="footer-brand">Sniffer</span>
+
+    <p class="footer-copy">
+      &copy; 2026 Sniffer. All rights reserved.
+    </p>
+
+  </div>
+</footer>
 
   <!-- Scripts -->
   <script src="../js/data.js"></script>

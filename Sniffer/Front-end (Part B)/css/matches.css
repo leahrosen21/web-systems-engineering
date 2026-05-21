@@ -59,6 +59,15 @@
   padding: var(--space-2xl);
 }
 
+.no-matches {
+  text-align: center;
+  border: 2px dashed var(--color-primary-light);
+  border-radius: var(--radius-xl);
+  max-width: 400px;
+  margin: var(--space-2xl) auto;
+  background-color: var(--color-card-bg);
+}
+
 .no-matches-icon {
   font-size: 3.5rem;
   display: block;

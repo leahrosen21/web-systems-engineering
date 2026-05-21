@@ -286,10 +286,10 @@ document.addEventListener('DOMContentLoaded', function () {
     matchText.textContent = 'You matched with ' + (matched.name || matched.username) + '!';
 
     matchContact.innerHTML = `
-      <p class="match-contact-row">
+      <div class="match-contact-row">
         <div aria-hidden="true"><img src="../images/contact.png" alt="Phone icon" style="width:30px; height:30px;" /></div>
         <span>${escapeHTML(matched.phone || 'Contact info available in Matches')}</span>
-      </p>
+      </div>
     `;
 
     matchModal.hidden = false;

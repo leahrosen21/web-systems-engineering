@@ -123,16 +123,13 @@ with toggle */
 .form-section-title {
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   color: var(--color-accent);
   margin-bottom: var(--space-lg);
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: var(--space-sm);
-}
-
-.form-section-title .section-icon {
-  font-size: 1.2rem;
 }
 
 /* Two-column grid inside form */
@@ -174,11 +171,6 @@ with toggle */
   color: var(--color-primary);
 }
 
-.file-upload-icon {
-  font-size: 2rem;
-  margin-bottom: var(--space-sm);
-  display: block;
-}
 
 /* ----- Progress steps (signup) ----- */
 .signup-steps {
