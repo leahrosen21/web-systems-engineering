@@ -52,7 +52,11 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    // Render up to 3 cards from current position (bottom-up in DOM = visual stack)
+    noMoreEl.hidden = true;
+    deck.hidden = false;
+    swipeActions.style.display = ''; 
+
+    // Render up to 3 cards from current position
     const visibleCount = Math.min(3, profiles.length);
 
     for (let i = visibleCount - 1; i >= 0; i--) {
@@ -93,8 +97,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
       <!-- Dog image placeholder -->
       <div class="dog-card-image" role="img" aria-label="${escapeHTML(dog.name || 'Dog')} photo">
-        <span aria-hidden="true">${emoji}</span>
-      </div>
+    ${dog.photo
+    ? `<img src="${escapeHTML(dog.photo)}" alt="${escapeHTML(dog.name || 'Dog')}" style="width:100%;height:100%;object-fit:cover;" />`
+    : `<span aria-hidden="true">${emoji}</span>`
+    }
+    </div>
 
       <div class="dog-card-body">
         <div class="dog-card-name">${escapeHTML(dog.name || 'Unknown')}</div>
@@ -280,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     matchContact.innerHTML = `
       <p class="match-contact-row">
-        <span aria-hidden="true">📞</span>
+        <div aria-hidden="true"><img src="../images/contact.png" alt="Phone icon" style="width:30px; height:30px;" /></div>
         <span>${escapeHTML(matched.phone || 'Contact info available in Matches')}</span>
       </p>
     `;
