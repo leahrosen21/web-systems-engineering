@@ -1,6 +1,4 @@
-/* ================================================
-   signup.js — Signup form validation & submission
-   ================================================ */
+// signup validation
 
 document.addEventListener('DOMContentLoaded', function () {
 

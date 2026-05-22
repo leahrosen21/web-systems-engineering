@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sniffer || Recommendations</title>
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/recommendations.css" />
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="container">
+      <a href="home.html" class="navbar-brand" aria-label="Sniffer home">
+        <span class="brand-paw" aria-hidden="true">
+          <img src="../images/heart-paw-yellow.png" alt="Sniffer paw icon" class="brand-logo"/>
+        </span>
+        Sniffer
+      </a>
+
+      <button class="navbar-toggle" aria-label="Toggle navigation menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+
+      <ul class="nav-links" role="list">
+        <li><a href="home.html">Discover</a></li>
+        <li><a href="matches.html">My Matches</a></li>
+        <li><a href="profile.html">Profile</a></li>
+        <li><a href="availability.html">Availability</a></li>
+        <li><a href="recommendations.html" class="active">Community</a></li>
+        <li><a href="login.html" id="nav-logout-link">Log Out</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="page-content">
+    <div class="container">
+
+      <div class="recommendations-header animate-in">
+        <div>
+          <h1>Community Recommendations</h1>
+          <p>Explore dog parks, products, and services recommended by other dog owners.</p>
+        </div>
+
+        <button class="add-rec-btn" id="open-rec-form">
+          +
+        </button>
+      </div>
+
+      <div class="filter-box">
+        <label class="form-label" for="category-filter">Filter by category</label>
+        <select class="form-control" id="category-filter">
+          <option value="all">All</option>
+          <option value="park">Dog Parks</option>
+          <option value="service">Dog Services</option>
+          <option value="product">Dog Products</option>
+        </select>
+      </div>
+
+      <div id="recommendations-list" class="recommendations-grid">
+        <!-- Recommendations are added by JS -->
+      </div>
+
+      <div id="no-recommendations" class="empty-state" hidden>
+        <h3>No recommendations yet</h3>
+        <p>Add the first recommendation to help other dog owners.</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Add recommendation popup -->
+  <div class="rec-modal" id="rec-modal" hidden>
+    <div class="rec-modal-box card">
+      <div class="card-body">
+
+        <div class="modal-header-row">
+          <h2>Add Recommendation</h2>
+          <button type="button" class="close-modal-btn" id="close-rec-form">X</button>
+        </div>
+
+        <div class="alert alert-success" id="rec-success" hidden>
+          Recommendation added successfully!
+        </div>
+
+        <form id="recommendation-form" novalidate>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-title">
+              Title <span class="required-star">*</span>
+            </label>
+            <input class="form-control" type="text" id="rec-title" required />
+            <span class="error-message"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-category">
+              Category <span class="required-star">*</span>
+            </label>
+            <select class="form-control" id="rec-category" required>
+              <option value="">Select category</option>
+              <option value="park">Dog Park</option>
+              <option value="service">Dog Service</option>
+              <option value="product">Dog Product</option>
+            </select>
+            <span class="error-message"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-description">
+              Description <span class="required-star">*</span>
+            </label>
+            <textarea class="form-control" id="rec-description" rows="4" maxlength="250" required></textarea>
+            <div class="form-hint" id="rec-char-count">0/250</div>
+            <span class="error-message"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="rec-image">Image optional</label>
+            <input class="form-control" type="file" id="rec-image" accept="image/*" />
+            <div id="rec-image-preview"></div>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-block">
+            Add Recommendation
+          </button>
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="container">
+      <span class="footer-brand">Sniffer</span>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="home.html">Discover</a>
+        <a href="matches.html">Matches</a>
+        <a href="recommendations.html">Community</a>
+      </nav>
+    </div>
+    <div class="container">
+      <p class="footer-copy">&copy; 2026 Sniffer. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/validation.js"></script>
+  <script src="../js/nav.js"></script>
+  <script src="../js/recommendations.js"></script>
+</body>
+</html>
