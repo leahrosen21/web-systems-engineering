@@ -100,10 +100,24 @@ function validatePasswordMatch(password, confirm) {
  * - Must start with 0
  */
 function validatePhone(value) {
-  if (!value || value.trim() === '') return 'Phone number is required.';
-  const digits = value.replace(/[\s\-]/g, ''); // allow spaces/dashes in input
-  if (!/^\d{10}$/.test(digits)) return 'Phone must be exactly 10 digits.';
-  if (digits[0] !== '0') return 'Phone number must start with 0.';
+  if (!value || value.trim() === '') {
+    return 'Phone number is required.';
+  }
+
+  const cleaned = value.replace(/[\s\-]/g, '');
+
+  if (!/^\d+$/.test(cleaned)) {
+    return 'Phone number must contain digits only.';
+  }
+
+  if (cleaned.length !== 10) {
+    return 'Phone number must be exactly 10 digits.';
+  }
+
+  if (cleaned[0] !== '0') {
+    return 'Phone number must start with 0.';
+  }
+
   return null;
 }
 
@@ -111,11 +125,28 @@ function validatePhone(value) {
  * Validate age: must be a positive integer, reasonable range.
  */
 function validateAge(value, isAnimal) {
-  if (!value || value.trim() === '') return 'Age is required.';
+  if (!value || value.trim() === '') {
+    return 'Age is required.';
+  }
+
+  if (!/^\d+$/.test(value.trim())) {
+    return 'Age must contain numbers only.';
+  }
+
   const num = Number(value);
-  if (!Number.isInteger(num) || num <= 0) return 'Please enter a valid age.';
-  if (isAnimal && num > 30) return 'Dog age seems unrealistic.';
-  if (!isAnimal && (num < 18 || num > 120)) return 'Please enter your real age (18+).';
+
+  if (num <= 0) {
+    return 'Please enter a valid age.';
+  }
+
+  if (isAnimal && num > 30) {
+    return 'Dog age seems unrealistic.';
+  }
+
+  if (!isAnimal && (num < 18 || num > 120)) {
+    return 'Please enter your real age (18+).';
+  }
+
   return null;
 }
 
@@ -124,6 +155,15 @@ function validateAge(value, isAnimal) {
  */
 function validateSelect(value, label) {
   if (!value || value === '') return 'Please select a ' + label + '.';
+  return null;
+}
+
+// Validate max legnth
+function validateMaxLength(value, maxLength, label) {
+  if (value.trim().length > maxLength) {
+    return label + ' must be less than ' + maxLength + ' characters.';
+  }
+
   return null;
 }
 
@@ -176,4 +216,17 @@ function validateForm(rules) {
   });
 
   return allValid;
+}
+
+// Username validation
+function validateUsername(value) {
+  if (!value || value.trim() === '') {
+    return 'Username is required.';
+  }
+
+  if (value.trim().length < 3) {
+    return 'Username must be at least 3 characters.';
+  }
+
+  return null;
 }

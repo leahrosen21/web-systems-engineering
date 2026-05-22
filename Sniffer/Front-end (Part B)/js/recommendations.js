@@ -73,7 +73,15 @@ document.addEventListener('DOMContentLoaded', function () {
     const valid = validateForm([
       { field: titleField, validator: function (v) { return validateRequired(v, 'Title'); } },
       { field: categoryField, validator: function (v) { return validateSelect(v, 'category'); } },
-      { field: descriptionField, validator: function (v) { return validateRequired(v, 'Description'); } }
+      {
+      field: descriptionField,
+      validator: function (v) {
+            return (
+            validateRequired(v, 'Description') ||
+            validateMaxLength(v, 250, 'Description')
+            );
+        }
+      }    
     ]);
 
     if (!valid) return;
