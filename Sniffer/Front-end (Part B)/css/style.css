@@ -657,7 +657,7 @@ textarea.form-control {
     background: var(--color-white);
     border-bottom: 2px solid var(--color-border);
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
     padding: var(--space-md);
     gap: var(--space-xs);
     box-shadow: var(--shadow-md);
@@ -668,9 +668,9 @@ textarea.form-control {
   }
 
   .nav-links a {
-    padding: var(--space-md);
-    text-align: center;
-    border-radius: var(--radius-md);
+  display: inline-flex;
+  padding: 8px 14px;
+  border-radius: var(--radius-full);
   }
 
   .footer .container {

@@ -303,9 +303,14 @@
 
 .modal-actions {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: var(--space-md);
+}
+
+.modal-actions .btn {
+  width: 220px;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
 /* ----- Swipe animations (applied by JS) ----- */
