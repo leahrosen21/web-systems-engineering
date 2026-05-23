@@ -1,0 +1,68 @@
+/* availability.css */
+
+.avail-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: var(--space-xl);
+  align-items: start;
+}
+
+.avail-form-title,
+.avail-list-title {
+  color: var(--color-text);
+  margin-bottom: var(--space-md);
+}
+
+.avail-list-wrapper {
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.slot-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--radius-md);
+  background: var(--color-input-bg);
+  margin-bottom: var(--space-md);
+}
+
+.slot-card p {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+}
+
+.remove-slot-btn {
+  color: var(--color-error);
+  font-weight: 700;
+  padding: 8px 12px;
+  border-radius: var(--radius-full);
+}
+
+.remove-slot-btn:hover {
+  background: #FDECEA;
+}
+
+.no-slots {
+  padding: var(--space-lg);
+  border: 2px dashed var(--color-primary-light);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .avail-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .slot-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

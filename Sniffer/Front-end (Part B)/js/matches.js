@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function openMatchDetail(user, emoji) {
     const dog  = user.dog  || {};
-    const pref = user.preferences || {};
 
     modalContent.innerHTML = `
       <div class="modal-dog-header">
@@ -122,7 +121,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <span>${escapeHTML(user.phone || 'Not available')}</span>
         </div>
       </div>
-
+      ${buildAvailabilityHTML(user)}
       <button class="btn btn-outline btn-block modal-close-btn" id="close-detail-modal">
         Close
       </button>
@@ -145,6 +144,53 @@ document.addEventListener('DOMContentLoaded', function () {
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !modal.hidden) modal.hidden = true;
   });
+
+  function buildAvailabilityHTML(user) {
+    const slots = user.availability || [];
+
+    if (slots.length === 0) {
+      return `
+        <div class="modal-section">
+          <div class="modal-section-title">Match Availability</div>
+          <p style="font-size:0.92rem; color: var(--color-text-muted);">
+            This match has not added availability yet.
+          </p>
+        </div>
+      `;
+    }
+
+    const visibleSlots = slots.slice(0, 3);
+    const extraCount = slots.length - visibleSlots.length;
+
+    let html = `
+      <div class="modal-section">
+        <div class="modal-section-title">Match Availability</div>
+        <div class="availability-mini-list">
+    `;
+
+    visibleSlots.forEach(function (slot) {
+      html += `
+        <div class="availability-mini-item">
+          ${escapeHTML(slot.day)} · ${escapeHTML(slot.start)}-${escapeHTML(slot.end)} · ${escapeHTML(slot.type)}
+        </div>
+      `;
+    });
+
+    if (extraCount > 0) {
+      html += `
+        <div class="availability-mini-more">
+          + ${extraCount} more time slots
+        </div>
+      `;
+    }
+
+    html += `
+        </div>
+      </div>
+    `;
+
+    return html;
+  }
 
   render();
 

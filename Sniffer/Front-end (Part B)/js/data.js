@@ -251,6 +251,10 @@ function getSeedUsers() {
       location: 'Central District',
       phone: '0521234567',
       aboutOwner: 'Hi! I love long walks in Hayarkon Park.',
+      availability: [
+        { day: 'Monday', start: '17:00', end: '19:00', type: 'Walk' },
+        { day: 'Saturday', start: '09:00', end: '11:00', type: 'Playdate' }
+      ],
       dog: {
         name: 'Buddy',
         photo: '../images/dogs/buddy.jpg',
@@ -282,6 +286,10 @@ function getSeedUsers() {
       location: 'Central District',
       phone: '0539876543',
       aboutOwner: 'Dog dad. Software engineer by day, ball-thrower by evening.',
+      availability: [
+        { day: 'Monday', start: '17:00', end: '19:00', type: 'Walk' },
+        { day: 'Saturday', start: '09:00', end: '11:00', type: 'Playdate' }
+      ],      
       dog: {
         name: 'Pickle',
         photo: '../images/dogs/pickle.jpg',
@@ -313,6 +321,10 @@ function getSeedUsers() {
       location: 'Central District',
       phone: '0547654321',
       aboutOwner: 'Work from home & my corgi is my coworker.',
+      availability: [
+        { day: 'Monday', start: '17:00', end: '19:00', type: 'Walk' },
+        { day: 'Saturday', start: '09:00', end: '11:00', type: 'Playdate' }
+      ],      
       dog: {
         name: 'Pretzel',
         photo: '../images/dogs/pretzel.jpg',
@@ -344,6 +356,10 @@ function getSeedUsers() {
       location: 'Central District',
       phone: '0521112222',
       aboutOwner: 'Weekend hiker and full-time husky wrangler.',
+      availability: [
+        { day: 'Monday', start: '17:00', end: '19:00', type: 'Walk' },
+        { day: 'Saturday', start: '09:00', end: '11:00', type: 'Playdate' }
+      ],      
       dog: {
         name: 'Blizzard',
         photo: '../images/dogs/blizzard.jpg',

@@ -82,7 +82,7 @@ function validateEmail(value) {
  */
 function validatePassword(value) {
   if (!value) return 'Password is required.';
-  if (value.length < 6) return 'Password must be at least 6 characters.';
+  if (value.length < 6) return 'At least 6 characters.';
   return null;
 }
 
@@ -114,8 +114,8 @@ function validatePhone(value) {
     return 'Phone number must be exactly 10 digits.';
   }
 
-  if (cleaned[0] !== '0') {
-    return 'Phone number must start with 0.';
+  if (!cleaned.startsWith('05')) {
+    return 'Phone number must be an Israeli mobile number starting with 05.';
   }
 
   return null;
