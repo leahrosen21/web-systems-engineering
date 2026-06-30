@@ -22,14 +22,6 @@
   <!-- ===== MAIN CONTENT ===== -->
   <main class="page-content auth-page" id="main-content">
     <div class="auth-wrapper animate-in">
-
-      <!--
-      <div class="auth-decoration" aria-hidden="true">
-        <span class="paw-lg">🐾</span>
-        <span class="paw-sm">🐾</span>
-      </div>
-    -->
-
       <div class="auth-card card">
         <div class="card-body">
 
@@ -38,39 +30,51 @@
             <p>Set up your profile and start finding playdates for your dog.</p>
           </div>
 
-          <!-- Global error banner -->
+          <!-- Step indicator -->
+          <div class="step-indicator" aria-label="Sign up progress">
+            <div class="step-item">
+              <div class="step-dot active" data-step="1"><span>1</span></div>
+              <span class="step-label">Account</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+              <div class="step-dot" data-step="2"><span>2</span></div>
+              <span class="step-label">Profile</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+              <div class="step-dot" data-step="3"><span>3</span></div>
+              <span class="step-label">Your Dog</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step-item">
+              <div class="step-dot" data-step="4"><span>4</span></div>
+              <span class="step-label">Preferences</span>
+            </div>
+          </div>
+
+          <!-- Error / success banners -->
           <div class="alert alert-error" id="signup-error" role="alert" hidden></div>
-          <!-- Success banner -->
           <div class="alert alert-success" id="signup-success" role="status" hidden>
             Account created! Redirecting you to the home page...
           </div>
 
           <!-- SIGNUP FORM -->
-          <form id="signup-form" novalidate aria-label="Create account form">
+          <form id="signup-form" action="/signup" method="post" novalidate aria-label="Create account form">
 
-            
-            <div class="form-section-title">
-                Your Profile
+            <!-- ===== STEP 1: Account ===== -->
+            <div class="form-step" data-step="1">
+              <div class="form-section-title">Account</div>
+
+              <div class="form-group">
+                <label class="form-label" for="username">
+                  Username <span class="required-star" aria-hidden="true">*</span>
+                </label>
+                <input class="form-control" type="text" id="username" name="username"
+                  placeholder="e.g. lucky_paws" required autocomplete="username" />
+                <span class="error-message" role="alert"></span>
               </div>
-            
-            <!-- Two-column grid for username + full name -->
-              <div class="form-grid-2"> 
-                <div class="form-group">
-                  <label class="form-label" for="username">
-                    Username <span class="required-star" aria-hidden="true">*</span>
-                  </label>
-                  <input class="form-control" type="text" id="username" name="username"
-                    placeholder="e.g. lucky_paws" required autocomplete="username" />
-                  <span class="error-message" role="alert"></span>
-                </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="name">Full Name</label>
-                  <input class="form-control" type="text" id="name" name="name"
-                    placeholder="Your name" autocomplete="name" />
-                </div>
-              </div> 
-              
               <div class="form-group">
                 <label class="form-label" for="email">
                   Email Address <span class="required-star" aria-hidden="true">*</span>
@@ -80,9 +84,7 @@
                 <span class="error-message" role="alert"></span>
               </div>
 
-
-              <!-- Two-column grid for password fields -->
-             <div class="form-grid-2">
+              <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="password">
                     Password <span class="required-star" aria-hidden="true">*</span>
@@ -101,51 +103,41 @@
                   </label>
                   <input class="form-control" type="password" id="confirm-password"
                     name="confirm-password" placeholder="Repeat password"
-                    required autocomplete="new-password"/>
+                    required autocomplete="new-password" />
                   <span class="error-message" role="alert"></span>
                 </div>
               </div>
+            </div>
 
-              <!-- Two-column grid for age and gender -->
+            <!-- ===== STEP 2: Your Profile ===== -->
+            <div class="form-step" data-step="2" hidden>
+              <div class="form-section-title">Your Profile</div>
+
               <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="name">Full Name</label>
+                  <input class="form-control" type="text" id="name" name="name"
+                    placeholder="Your name" autocomplete="name" />
+                </div>
+
                 <div class="form-group">
                   <label class="form-label" for="age">Your Age</label>
                   <input class="form-control" type="number" id="age" name="age"
                     placeholder="e.g. 28" min="18" max="120" />
                   <span class="error-message" role="alert"></span>
                 </div>
-
-                <div class="form-group">
-                  <label class="form-label" for="gender">Gender (optional)</label>
-                  <select class="form-control" id="gender" name="gender">
-                    <option value="">Prefer not to say</option>
-                    <option value="Female">Female</option>
-                    <option value="Male">Male</option>
-                    <option value="Non-binary">Non-binary</option>
-                    <option value="Other">Other</option>
-                  </select>
-                </div>
               </div>
 
-              <!-- Two-column grid for location and phone -->
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="location">
                     Location <span class="required-star" aria-hidden="true">*</span>
                   </label>
-                  <select class="form-control" type="text" id="location" name="location" 
-                     required>
-                  <option value="" disabled selected>Choose a district</option>
-                  <option value="Jerusalem District">Jerusalem District</option>
-                  <option value="Tel Aviv District">Tel Aviv District</option>
-                  <option value="Haifa District">Haifa District</option>
-                  <option value="Central District">Central District</option>
-                  <option value="Northern District">Northern District</option>
-                  <option value="Southern District">Southern District</option>
+                  <select class="form-control" id="location" name="location" required>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                   <span class="error-message" role="alert"></span>
                 </div>
-              
 
                 <div class="form-group">
                   <label class="form-label" for="phone">
@@ -159,18 +151,23 @@
               </div>
 
               <div class="form-group">
+                <label class="form-label" for="gender">Gender (optional)</label>
+                <select class="form-control" id="gender" name="gender">
+                  <option value="" disabled selected>Loading...</option>
+                </select>
+              </div>
+
+              <div class="form-group">
                 <label class="form-label" for="about-owner">About You (optional)</label>
                 <textarea class="form-control" id="about-owner" name="about-owner" rows="3"
                   maxlength="200" placeholder="Tell other dog owners a bit about yourself..."></textarea>
                 <div class="form-hint" id="owner-char-count">0/200</div>
               </div>
+            </div>
 
-            <br>
-
-            <div class="form-section-title">
-                Your Dog's Profile
-              </div>
-
+            <!-- ===== STEP 3: Your Dog ===== -->
+            <div class="form-step" data-step="3" hidden>
+              <div class="form-section-title">Your Dog's Profile</div>
 
               <div class="form-grid-2">
                 <div class="form-group">
@@ -194,70 +191,16 @@
 
               <div class="form-grid-2">
                 <div class="form-group">
-  <label class="form-label" for="dog-breed">Breed</label>
+                  <label class="form-label" for="dog-breed">Breed</label>
+                  <select class="form-control" id="dog-breed" name="dog-breed">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
 
-  <select class="form-control" id="dog-breed" name="dog-breed">
-    <option value="" disabled selected>Select a breed</option>
-
-    <option value="French Bulldog">French Bulldog</option>
-    <option value="Labrador Retriever">Labrador Retriever</option>
-    <option value="Golden Retriever">Golden Retriever</option>
-    <option value="German Shepherd Dog">German Shepherd Dog</option>
-    <option value="Dachshund">Dachshund</option>
-    <option value="Poodle">Poodle</option>
-    <option value="Beagle">Beagle</option>
-    <option value="Rottweiler">Rottweiler</option>
-    <option value="German Shorthaired Pointer">German Shorthaired Pointer</option>
-    <option value="Bulldog">Bulldog</option>
-    <option value="Cane Corso">Cane Corso</option>
-    <option value="Cavalier King Charles Spaniel">Cavalier King Charles Spaniel</option>
-    <option value="Yorkshire Terrier">Yorkshire Terrier</option>
-    <option value="Australian Shepherd">Australian Shepherd</option>
-    <option value="Doberman Pinscher">Doberman Pinscher</option>
-    <option value="Pembroke Welsh Corgi">Pembroke Welsh Corgi</option>
-    <option value="Miniature Schnauzer">Miniature Schnauzer</option>
-    <option value="Boxer">Boxer</option>
-    <option value="Pomeranian">Pomeranian</option>
-    <option value="Bernese Mountain Dog">Bernese Mountain Dog</option>
-    <option value="Shih Tzu">Shih Tzu</option>
-    <option value="Great Dane">Great Dane</option>
-    <option value="Boston Terrier">Boston Terrier</option>
-    <option value="Chihuahua">Chihuahua</option>
-    <option value="Havanese">Havanese</option>
-    <option value="Border Collie">Border Collie</option>
-    <option value="English Springer Spaniel">English Springer Spaniel</option>
-    <option value="Miniature American Shepherd">Miniature American Shepherd</option>
-    <option value="Shetland Sheepdog">Shetland Sheepdog</option>
-    <option value="Siberian Husky">Siberian Husky</option>
-    <option value="Brittany">Brittany</option>
-    <option value="Belgian Malinois">Belgian Malinois</option>
-    <option value="Cocker Spaniel">Cocker Spaniel</option>
-    <option value="Basset Hound">Basset Hound</option>
-    <option value="English Cocker Spaniel">English Cocker Spaniel</option>
-    <option value="Vizsla">Vizsla</option>
-    <option value="Maltese">Maltese</option>
-    <option value="Pug">Pug</option>
-    <option value="Collie">Collie</option>
-    <option value="Mastiff">Mastiff</option>
-    <option value="Rhodesian Ridgeback">Rhodesian Ridgeback</option>
-    <option value="Papillon">Papillon</option>
-    <option value="Portuguese Water Dog">Portuguese Water Dog</option>
-    <option value="Shiba Inu">Shiba Inu</option>
-    <option value="West Highland White Terrier">West Highland White Terrier</option>
-    <option value="Newfoundland">Newfoundland</option>
-    <option value="Australian Cattle Dog">Australian Cattle Dog</option>
-    <option value="Whippet">Whippet</option>
-    <option value="Bichon Frise">Bichon Frise</option>
-    <option value="Dalmatian">Dalmatian</option>
-  </select>
-</div>
                 <div class="form-group">
                   <label class="form-label" for="dog-size">Size</label>
                   <select class="form-control" id="dog-size" name="dog-size">
-                    <option value="" disabled selected>Select size</option>
-                    <option value="Small">Small (up to 10 kg)</option>
-                    <option value="Medium">Medium (10-25 kg)</option>
-                    <option value="Large">Large (25+ kg)</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
               </div>
@@ -266,21 +209,16 @@
                 <div class="form-group">
                   <label class="form-label" for="dog-gender">Dog's Gender</label>
                   <select class="form-control" id="dog-gender" name="dog-gender">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
 
                 <div class="form-group">
                   <label class="form-label" for="dog-energy">Energy Level</label>
                   <select class="form-control" id="dog-energy" name="dog-energy">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
-                  <span class="form-hint"> Natural baseline for physical stamina and need for activity.</span>
+                  <span class="form-hint">Natural baseline for physical stamina and need for activity.</span>
                 </div>
               </div>
 
@@ -288,23 +226,14 @@
                 <div class="form-group">
                   <label class="form-label" for="dog-personality">Personality</label>
                   <select class="form-control" id="dog-personality" name="dog-personality">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Friendly">Friendly</option>
-                    <option value="Playful">Playful</option>
-                    <option value="Calm">Calm</option>
-                    <option value="Curious">Curious</option>
-                    <option value="Shy">Shy</option>
-                    <option value="Adventurous">Adventurous</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
 
                 <div class="form-group">
                   <label class="form-label" for="dog-play">Play Style</label>
                   <select class="form-control" id="dog-play" name="dog-play">
-                    <option value="" disabled selected>Select</option>
-                    <option value="Indoor">Indoor</option>
-                    <option value="Outdoor">Outdoor</option>
-                    <option value="Both">Both</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
               </div>
@@ -312,12 +241,7 @@
               <div class="form-group">
                 <label class="form-label" for="dog-compat">Compatibility With</label>
                 <select class="form-control" id="dog-compat" name="dog-compat">
-                  <option value="" disabled selected>Select</option>
-                  <option value="All dogs">All dogs</option>
-                  <option value="Small & Medium dogs">Small & Medium dogs</option>
-                  <option value="Large dogs">Large dogs only</option>
-                  <option value="Female dogs">Female dogs only</option>
-                  <option value="Male dogs">Male dogs only</option>
+                  <option value="" disabled selected>Loading...</option>
                 </select>
               </div>
 
@@ -325,24 +249,22 @@
                 <label class="form-label" for="dog-vaccinated">Vaccination Status</label>
                 <select class="form-control" id="dog-vaccinated" name="dog-vaccinated">
                   <option value="" disabled selected>Select</option>
-                  <option value="Yes">Yes - fully vaccinated</option>
+                  <option value="Yes">Yes — fully vaccinated</option>
                   <option value="Partial">Partially vaccinated</option>
                   <option value="No">Not vaccinated</option>
                 </select>
-                <div class="form-hint"> Namely: Rabies and DHPP/DA2PP. </div>
-                <div class="form-hint"> We recommend keeping your dog vaccinated for their safety and the safety of others.</div>
+                <div class="form-hint">Namely: Rabies and DHPP/DA2PP.</div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="dog-about">About Your Dog</label>
-                <textarea class="form-control" id="dog-about" name="dog-about" rows="4"
-                  placeholder="Tell us about your dog's personality, quirks, and anything others should know..."></textarea>
-              <div class="form-hint" id="dog-char-count">0/200</div>
-                </div>
+                <textarea class="form-control" id="dog-about" name="dog-about" rows="3"
+                  maxlength="200" placeholder="Tell us about your dog's personality, quirks, and anything others should know..."></textarea>
+                <div class="form-hint" id="dog-char-count">0/200</div>
+              </div>
 
-              <!-- Photo upload -->
               <div class="form-group">
-                <label class="form-label">Dog Photos/Videos (optional)</label>
+                <label class="form-label">Dog Photo (optional)</label>
                 <div class="file-upload-area" id="drop-zone">
                   <label class="file-upload-label" for="dog-photos">
                     <strong>Click to upload</strong> or drag and drop
@@ -354,32 +276,28 @@
                 </div>
                 <div id="file-preview" style="margin-top: var(--space-sm);"></div>
               </div>
+            </div>
 
-            
-            <br>
-
-            <!-- SECTION 3: Matching Preferences -->
-              <div class="form-section-title">
-                Matching Preferences
-              </div>
+            <!-- ===== STEP 4: Matching Preferences ===== -->
+            <div class="form-step" data-step="4" hidden>
+              <div class="form-section-title">Matching Preferences</div>
+              <p class="step-optional-note">
+                All optional - help us find the right playmates. You can change these anytime.
+                <a href="#" id="btn-skip" class="skip-link">Skip this step</a>
+              </p>
 
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="pref-size">Preferred Dog Size</label>
                   <select class="form-control" id="pref-size" name="pref-size">
-                    <option value="Any">Any size</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Large">Large</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
 
                 <div class="form-group">
                   <label class="form-label" for="pref-interaction">Type of Meetup</label>
                   <select class="form-control" id="pref-interaction" name="pref-interaction">
-                    <option value="Any">Any</option>
-                    <option value="Playdate">Playdate</option>
-                    <option value="Walk">Walk</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
               </div>
@@ -387,20 +305,19 @@
               <div class="form-group">
                 <label class="form-label" for="pref-personality">Preferred Personality</label>
                 <select class="form-control" id="pref-personality" name="pref-personality">
-                  <option value="Any">Any</option>
-                    <option value="Friendly">Friendly</option>
-                    <option value="Playful">Playful</option>
-                    <option value="Calm">Calm</option>
-                    <option value="Curious">Curious</option>
-                    <option value="Shy">Shy</option>
-                    <option value="Adventurous">Adventurous</option>
-                  </select>
+                  <option value="" disabled selected>Loading...</option>
                 </select>
               </div>
+            </div>
 
-            <button type="submit" class="btn btn-primary btn-block btn-lg" id="signup-submit">
-              Create My Account
-            </button>
+            <!-- Navigation buttons -->
+            <div class="step-nav">
+              <button type="button" class="btn btn-outline" id="btn-back" hidden>&#8592; Back</button>
+              <button type="button" class="btn btn-primary" id="btn-next">Next &#8594;</button>
+              <button type="submit" class="btn btn-primary btn-lg" id="signup-submit" hidden>
+                Create My Account
+              </button>
+            </div>
 
           </form>
 
@@ -411,7 +328,6 @@
 
         </div>
       </div>
-
     </div>
   </main>
 
@@ -421,30 +337,22 @@
       <span class="footer-brand">Sniffer</span>
     </div>
     <div class="container">
-  <p class="footer-copy">
-      &copy; 2026 Sniffer. All rights reserved.
-    </p>
+      <p class="footer-copy">&copy; 2026 Sniffer. All rights reserved.</p>
     </div>
   </footer>
 
-
   <script>
-      // character counter for "About You" textarea
+    const ownerTextarea = document.getElementById('about-owner');
+    const ownerCounter  = document.getElementById('owner-char-count');
+    const dogTextarea   = document.getElementById('dog-about');
+    const dogCounter    = document.getElementById('dog-char-count');
 
-  const ownerTextarea = document.getElementById("about-owner");
-  const ownerCounter = document.getElementById("owner-char-count");
-  
-  const dogTextarea = document.getElementById("dog-about");
-  const dogCounter = document.getElementById("dog-char-count");
-
-  ownerTextarea.addEventListener("input", () => {
-    ownerCounter.textContent = `${ownerTextarea.value.length}/200`;
-  });
-
-  dogTextarea.addEventListener("input", () => {
-    dogCounter.textContent = `${dogTextarea.value.length}/200`;
-  });
-
+    ownerTextarea.addEventListener('input', function () {
+      ownerCounter.textContent = ownerTextarea.value.length + '/200';
+    });
+    dogTextarea.addEventListener('input', function () {
+      dogCounter.textContent = dogTextarea.value.length + '/200';
+    });
   </script>
 
   <script src="../js/data.js"></script>

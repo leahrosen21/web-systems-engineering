@@ -1,12 +1,68 @@
-// signup validation
-
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* If already logged in, skip to home */
   if (getCurrentUser()) {
     window.location.href = 'home.html';
     return;
   }
+
+  // selectId   — the id of the <select> element in the HTML
+  // url        — the API endpoint to fetch options from (e.g. "/locations")
+  // labelField — the field from the DB response to show the user (e.g. "city", "name")
+  // placeholder— the greyed-out first option shown before user picks (e.g. "Select a breed")
+  // anyOption  — if true, adds "Any" as the first selectable option (used for preferences)
+  // valueField — the field to use as the option's value sent to server (e.g. "id")
+  //              if not provided, falls back to labelField (sends the name instead of id)
+  function populateSelect(selectId, url, labelField, placeholder, anyOption, valueField) {
+    const select = document.getElementById(selectId);
+    select.disabled = true;
+
+    fetch(url)
+      .then(function (res) { return res.json(); })
+      .then(function (items) {
+        select.innerHTML = '';
+
+        if (anyOption) {
+          const def = document.createElement('option');
+          def.value = 'Any';
+          def.textContent = 'Any';
+          select.appendChild(def);
+        } else if (placeholder) {
+          const ph = document.createElement('option');
+          ph.value = '';
+          ph.disabled = true;
+          ph.selected = true;
+          ph.textContent = placeholder;
+          select.appendChild(ph);
+        }
+
+        items.forEach(function (item) {
+          const opt = document.createElement('option');
+          opt.value = item[valueField || labelField]; // sends id if valueField given, else name
+          opt.textContent = item[labelField];          // always shows the name to the user
+          select.appendChild(opt);
+        });
+
+        select.disabled = false;
+      })
+      .catch(function () {
+        select.innerHTML = '<option value="" disabled selected>Failed to load</option>';
+        select.disabled = false;
+      });
+  }
+
+  //                  selectId              url                     labelField  placeholder              anyOption  valueField
+  populateSelect("gender",            "/genders",             "name", "Prefer not to say",    false,     "id");
+  populateSelect("location",          "/locations",           "city", "Select your city",      false,     "id");
+  populateSelect("dog-breed",         "/breeds",              "name", "Select a breed",         false,     "id");
+  populateSelect("dog-size",          "/sizes",               "name", "Select size",            false,     "id");
+  populateSelect("dog-energy",        "/energy_levels",       "name", "Select energy level",    false,     "id");
+  populateSelect("dog-personality",   "/personalities",       "name", "Select personality",     false,     "id");
+  populateSelect("dog-play",          "/play_styles",         "name", "Select play style",      false,     "id");
+  populateSelect("dog-compat",        "/compatibility_types", "name", "Select compatibility",   false,     "id");
+  populateSelect("dog-gender",        "/genders",             "name", "Select gender",          false,     "id");
+  populateSelect("pref-size",         "/sizes",               "name", null,                     false,     "id");
+  populateSelect("pref-personality",  "/personalities",       "name", null,                     false,     "id");
+  populateSelect("pref-interaction",  "/interaction_types",   "name", null,                     false,     "id");
 
   /* ---- Field references ---- */
   const form          = document.getElementById('signup-form');
@@ -32,28 +88,25 @@ document.addEventListener('DOMContentLoaded', function () {
     toggleBtn.textContent = isHidden ? 'Hide' : 'Show';
   });
 
-  /* ---- Attach real-time validators ---- */
+  /* ---- Real-time validators ---- */
   attachValidator(usernameField, function (v) { return validateRequired(v, 'Username'); });
   attachValidator(emailField,    validateEmail);
   attachValidator(passField,     validatePassword);
   attachValidator(confirmField,  function (v) { return validatePasswordMatch(passField.value, v); });
   attachValidator(phoneField,    validatePhone);
   attachValidator(dogNameField,  function (v) { return validateRequired(v, "Dog's name"); });
-
   attachValidator(ageField, function (v) {
-    if (!v) return null; // age is optional
+    if (!v) return null;
     return validateAge(v, false);
   });
-
   attachValidator(dogAgeField, function (v) {
     return validateRequired(v, "Dog's age") || validateAge(v, true);
   });
-
   attachValidator(locationField, function (v) { return validateRequired(v, 'Location'); });
 
-  /* ---- File drag & drop visual feedback ---- */
-  const dropZone   = document.getElementById('drop-zone');
-  const fileInput  = document.getElementById('dog-photos');
+  /* ---- File drag & drop ---- */
+  const dropZone    = document.getElementById('drop-zone');
+  const fileInput   = document.getElementById('dog-photos');
   const filePreview = document.getElementById('file-preview');
 
   if (dropZone) {
@@ -61,11 +114,9 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       dropZone.classList.add('drag-over');
     });
-
     dropZone.addEventListener('dragleave', function () {
       dropZone.classList.remove('drag-over');
     });
-
     dropZone.addEventListener('drop', function (e) {
       e.preventDefault();
       dropZone.classList.remove('drag-over');
@@ -92,6 +143,82 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
+  /* ---- Multi-step logic ---- */
+  const steps      = document.querySelectorAll('.form-step');
+  const dots       = document.querySelectorAll('.step-dot');
+  const btnBack    = document.getElementById('btn-back');
+  const btnNext    = document.getElementById('btn-next');
+  const btnSubmit  = document.getElementById('signup-submit');
+  const btnSkip    = document.getElementById('btn-skip');
+  const totalSteps = steps.length;
+  let currentStep  = 1;
+
+  function showStep(n) {
+    steps.forEach(function (s) { s.hidden = true; });
+    dots.forEach(function (d) {
+      const sn = parseInt(d.dataset.step);
+      d.classList.remove('active', 'done');
+      if (sn < n)   d.classList.add('done');
+      if (sn === n) d.classList.add('active');
+    });
+    steps[n - 1].hidden = false;
+
+    btnBack.hidden   = n === 1;
+    btnNext.hidden   = n === totalSteps;
+    btnSubmit.hidden = n !== totalSteps;
+
+    errorBanner.hidden = true;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  btnSkip.addEventListener('click', function (e) {
+    e.preventDefault();
+    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  });
+
+  function validateStep(n) {
+    if (n === 1) {
+      return validateForm([
+        { field: usernameField, validator: function (v) { return validateRequired(v, 'Username'); } },
+        { field: emailField,    validator: validateEmail },
+        { field: passField,     validator: validatePassword },
+        { field: confirmField,  validator: function (v) { return validatePasswordMatch(passField.value, v); } },
+      ]);
+    }
+    if (n === 2) {
+      const rules = [
+        { field: locationField, validator: function (v) { return validateRequired(v, 'Location'); } },
+        { field: phoneField,    validator: validatePhone },
+      ];
+      if (ageField.value) {
+        rules.push({ field: ageField, validator: function (v) { return validateAge(v, false); } });
+      }
+      return validateForm(rules);
+    }
+    if (n === 3) {
+      return validateForm([
+        { field: dogNameField, validator: function (v) { return validateRequired(v, "Dog's name"); } },
+        { field: dogAgeField,  validator: function (v) { return validateRequired(v, "Dog's age") || validateAge(v, true); } },
+      ]);
+    }
+    return true; // step 4 has no required fields
+  }
+
+  btnNext.addEventListener('click', function () {
+    if (!validateStep(currentStep)) {
+      errorBanner.textContent = 'Please fix the errors above before continuing.';
+      errorBanner.hidden = false;
+      return;
+    }
+    currentStep++;
+    showStep(currentStep);
+  });
+
+  btnBack.addEventListener('click', function () {
+    currentStep--;
+    showStep(currentStep);
+  });
+
   /* ---- Form submit ---- */
   form.addEventListener('submit', function (e) {
     e.preventDefault();
@@ -99,7 +226,6 @@ document.addEventListener('DOMContentLoaded', function () {
     errorBanner.hidden   = true;
     successBanner.hidden = true;
 
-    /* Validate all required fields */
     const valid = validateForm([
       { field: usernameField, validator: function (v) { return validateRequired(v, 'Username'); } },
       { field: emailField,    validator: validateEmail },
@@ -114,13 +240,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!valid) {
       errorBanner.textContent = 'Please fix the errors above before continuing.';
       errorBanner.hidden = false;
-      // Scroll to first error
-      const firstError = form.querySelector('.form-control.error');
-      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
 
-    /* Build user object */
     const newUser = {
       username:    usernameField.value.trim(),
       email:       emailField.value.trim(),
@@ -134,7 +256,7 @@ document.addEventListener('DOMContentLoaded', function () {
       dog: {
         name:          dogNameField.value.trim(),
         age:           dogAgeField.value.trim(),
-        breed:         document.getElementById('dog-breed').value.trim(),
+        breed:         document.getElementById('dog-breed').value,
         size:          document.getElementById('dog-size').value,
         gender:        document.getElementById('dog-gender').value,
         energyLevel:   document.getElementById('dog-energy').value,
@@ -152,7 +274,6 @@ document.addEventListener('DOMContentLoaded', function () {
       alwaysMatches: false,
     };
 
-    /* Attempt registration */
     const success = registerUser(newUser);
 
     if (!success) {
@@ -162,9 +283,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return;
     }
 
-    /* Auto-login the new user */
     setCurrentUser(newUser);
-
     successBanner.hidden = false;
     form.style.opacity = '0.5';
     form.style.pointerEvents = 'none';
@@ -174,4 +293,5 @@ document.addEventListener('DOMContentLoaded', function () {
     }, 1500);
   });
 
+  showStep(1);
 });

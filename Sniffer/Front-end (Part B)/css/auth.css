@@ -154,6 +154,100 @@ with toggle */
   color: var(--color-primary);
 }
 
+/* ---- Step indicator ---- */
+.step-indicator {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: var(--space-xl);
+}
+
+.step-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-border);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  transition: background var(--transition), color var(--transition);
+}
+
+.step-dot.active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.step-dot.done {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+.step-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--color-border);
+  align-self: flex-start;
+  margin-top: 15px;
+  min-width: 16px;
+}
+
+/* ---- Step nav buttons ---- */
+.step-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-xl);
+  gap: var(--space-md);
+}
+
+.step-nav .btn {
+  min-width: 120px;
+}
+
+.step-nav #signup-submit {
+  margin-left: auto;
+}
+
+/* ---- Step 4 optional note ---- */
+.step-optional-note {
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-lg);
+}
+
+.skip-link {
+  display: inline-block;
+  margin-left: 6px;
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.skip-link:hover {
+  opacity: 0.8;
+}
+
 /* Specialized media queries */
 @media (max-width: 600px) {
   .auth-page {
