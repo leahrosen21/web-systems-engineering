@@ -74,7 +74,7 @@
 
 /* Card body */
 .dog-card-body {
-  padding: var(--space-md) var(--space-lg);
+  padding: var(--space-lg);
 }
 
 .dog-card-name {
@@ -82,20 +82,20 @@
   font-weight: 800;
   font-size: 1.4rem;
   color: var(--color-text);
-  margin-bottom: 2px;
+  margin-bottom: var(--space-xs);
 }
 
 .dog-card-meta {
   color: var(--color-text-muted);
   font-size: 0.88rem;
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
   font-weight: 600;
 }
 
 .dog-card-desc {
   font-size: 0.88rem;
   color: var(--color-text-muted);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
   /* Clamp to 2 lines so card doesn't overflow */
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -107,8 +107,8 @@
 .dog-card-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-sm);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
 .dog-card-owner {

@@ -1,29 +1,30 @@
 /* ================================================
-   login.js — Login page logic
+   login.js — validation only
+   Form submits naturally via action="/login".
+   Server sets localStorage and redirects on success,
+   or redirects with ?error= on failure.
    ================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* If already logged in, skip to home */
-  if (getCurrentUser()) {
-    window.location.href = 'home.html';
-    return;
+  const form          = document.getElementById('login-form');
+  const emailField    = document.getElementById('email');
+  const passField     = document.getElementById('password');
+  const errorBanner   = document.getElementById('login-error');
+  const successBanner = document.getElementById('login-success');
+  const toggleBtn     = document.getElementById('toggle-password');
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('error') === 'credentials') {
+    errorBanner.hidden = false;
+  }
+  if (params.get('success') === 'reset') {
+    successBanner.hidden = false;
   }
 
-  const form        = document.getElementById('login-form');
-  const emailField  = document.getElementById('email');
-  const passField   = document.getElementById('password');
-  const errorBanner = document.getElementById('login-error');
-  const toggleBtn   = document.getElementById('toggle-password');
-
-  /* ----- Attach real-time validators ----- */
   attachValidator(emailField, validateEmail);
+  attachValidator(passField, function (v) { return validateRequired(v, 'Password'); });
 
-  attachValidator(passField, function (v) {
-    return validateRequired(v, 'Password');
-  });
-
-  /* ----- Password show/hide toggle ----- */
   toggleBtn.addEventListener('click', function () {
     if (passField.type === 'password') {
       passField.type = 'text';
@@ -34,32 +35,17 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  /* ----- Form submit ----- */
+  // only block the form if client-side validation fails
+  // if valid, the form submits naturally to action="/login"
   form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    // Run all validations before attempting login
     const valid = validateForm([
       { field: emailField, validator: validateEmail },
       { field: passField,  validator: function (v) { return validateRequired(v, 'Password'); } },
     ]);
-
-    if (!valid) return;
-
-    // Attempt login
-    const user = loginUser(emailField.value.trim(), passField.value);
-
-    if (!user) {
+    if (!valid) {
+      e.preventDefault();
       errorBanner.hidden = false;
-      emailField.classList.add('error');
-      passField.classList.add('error');
-      return;
     }
-
-    // Success
-    errorBanner.hidden = true;
-    setCurrentUser(user);
-    window.location.href = 'home.html';
   });
 
 });

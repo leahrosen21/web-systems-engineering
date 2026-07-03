@@ -1,4 +1,19 @@
 /* matches.css */
+
+@keyframes paw-burst {
+  0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  60%  { opacity: 0.9; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.2); opacity: 0; }
+}
+
+.paw-particle {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  pointer-events: none;
+  animation: paw-burst 1.4s ease-out forwards;
+  z-index: 10;
+}
 .matches-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -17,7 +32,7 @@
 
 .match-card-avatar {
   width: 100%;
-  height: 160px;
+  height: 220px;
   background: linear-gradient(135deg, var(--color-primary-light), var(--color-bg));
   display: flex;
   align-items: center;
@@ -26,20 +41,20 @@
 }
 
 .match-card-body {
-  padding: var(--space-md);
+  padding: var(--space-lg);
 }
 
 .match-card-name {
   font-family: var(--font-display);
   font-weight: 800;
   font-size: 1.1rem;
-  margin-bottom: 4px;
+  margin-bottom: var(--space-sm);
 }
 
 .match-card-meta {
   font-size: 0.85rem;
   color: var(--color-text-muted);
-  margin-bottom: var(--space-sm);
+  margin-bottom: var(--space-md);
 }
 
 .match-badge {
@@ -102,11 +117,15 @@
 .modal-box {
   background: var(--color-card-bg);
   border-radius: var(--radius-xl);
-  padding: var(--space-xl);
-  max-width: 460px;
+  padding: var(--space-xl) calc(var(--space-xl) * 1.5);
+  max-width: 680px;
+  max-height: 90vh;
   width: 100%;
   box-shadow: var(--shadow-lg);
   border: 3px solid var(--color-primary-light);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .modal-dog-header {
@@ -117,20 +136,64 @@
 }
 
 .modal-avatar {
-  font-size: 3.5rem;
+  font-size: 4rem;
   background: linear-gradient(135deg, var(--color-primary-light), var(--color-bg));
-  width: 80px;
-  height: 80px;
+  width: 130px;
+  height: 130px;
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  border: 2px solid var(--color-border);
+  border: 3px solid var(--color-border);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--transition), box-shadow var(--transition);
 }
 
-.modal-dog-info h2 { margin-bottom: 4px; color: var(--color-accent); }
-.modal-dog-info p  { font-size: 0.88rem; }
+.modal-avatar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-full);
+  background: rgba(138, 43, 226, 0.25);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.modal-avatar:hover {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 4px var(--color-primary-light);
+}
+
+.modal-avatar:hover::after {
+  opacity: 1;
+}
+
+/* Full-image lightbox */
+.img-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 3000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+
+.img-lightbox[hidden] { display: none; }
+
+.img-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: var(--radius-xl);
+  object-fit: contain;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-dog-info h2 { margin-bottom: 6px; color: var(--color-accent); font-size: 1.75rem; }
+.modal-dog-info p  { font-size: 1.1rem; }
 
 .modal-section {
   margin-bottom: var(--space-lg);
@@ -138,11 +201,15 @@
 
 .modal-section-title {
   font-weight: 700;
-  font-size: 0.82rem;
-  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-bottom: var(--space-sm);
+}
+
+.modal-section p {
+  font-size: 1rem;
 }
 
 .modal-contact-box {

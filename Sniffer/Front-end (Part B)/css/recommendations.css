@@ -31,8 +31,14 @@
 }
 
 .filter-box {
-  max-width: 280px;
+  display: flex;
+  gap: var(--space-lg);
+  flex-wrap: wrap;
   margin-bottom: var(--space-lg);
+}
+
+.filter-box > div {
+  min-width: 200px;
 }
 
 .recommendations-grid {
@@ -47,11 +53,14 @@
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .recommendation-image {
   height: 170px;
   background: var(--color-primary-light);
+  flex-shrink: 0;
 }
 
 .recommendation-image img {
@@ -62,6 +71,13 @@
 
 .recommendation-body {
   padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.recommendation-body .tag {
+  align-self: flex-start;
 }
 
 .recommendation-title {
@@ -80,11 +96,17 @@
 }
 
 .recommendation-meta {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--space-sm);
-  font-size: 0.78rem;
+  font-size: 1rem;
   color: var(--color-text-muted);
+  margin-top: auto;
+  padding-top: var(--space-md);
+  text-align: center;
+}
+
+.rec-meta-dot {
+  color: var(--color-text);
+  font-weight: 700;
+  margin: 0 6px;
 }
 
 .empty-state {
@@ -114,6 +136,8 @@
 .rec-modal-box {
   width: 100%;
   max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .modal-header-row {

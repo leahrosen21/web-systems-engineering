@@ -1,28 +1,14 @@
 /* ================================================
-   home.js — Swipe/matching page logic
-   Handles:
-   - Rendering dog profile cards
-   - Sniff / Skip button clicks
-   - Touch/mouse drag-to-swipe
-   - Match pop-up modal
+   home.js — Discover / swipe page
    ================================================ */
 
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ---- Auth guard: redirect if not logged in ---- */
   requireLogin();
 
-  /* Update logout link behavior */
-  const logoutLink = document.getElementById('nav-logout-link');
-  if (logoutLink) {
-    logoutLink.addEventListener('click', function (e) {
-      e.preventDefault();
-      logout();
-      window.location.href = 'login.html';
-    });
-  }
+  const session  = getCurrentUser();
+  const userId   = session.user_id;
 
-  /* ---- DOM references ---- */
   const deck         = document.getElementById('card-deck');
   const noMoreEl     = document.getElementById('no-more-cards');
   const swipeActions = document.getElementById('swipe-actions');
@@ -33,17 +19,23 @@ document.addEventListener('DOMContentLoaded', function () {
   const matchText    = document.getElementById('match-text');
   const matchContact = document.getElementById('match-contact');
 
-  /* ---- Load profiles ---- */
-  let profiles = getUnseenProfiles();
-  let currentIndex = 0;   // which profile is "on top"
-
-  /* Emoji avatars as fallback when no photo uploaded */
   const dogEmojis = ['🐕', '🐩', '🦮', '🐕‍🦺', '🐶'];
 
-  /**
-   * Build and insert cards into the deck.
-   * We render 3 at a time (or however many remain) for the stacking effect.
-   */
+  let profiles = [];
+
+  // ---- load profiles from backend ----
+  fetch('/profiles', { headers: { 'X-User-Id': String(userId) } })
+  .then(function (res) { return res.json(); })
+  .then(function (data) {
+    profiles = data;
+    renderCards();
+  })
+  .catch(function () {
+    deck.innerHTML = '<p style="text-align:center;padding:2rem;">Failed to load profiles. Please refresh.</p>';
+  });
+
+  // ---- card rendering ----
+
   function renderCards() {
     deck.innerHTML = '';
 
@@ -54,270 +46,164 @@ document.addEventListener('DOMContentLoaded', function () {
 
     noMoreEl.hidden = true;
     deck.hidden = false;
-    swipeActions.style.display = ''; 
+    swipeActions.style.display = '';
 
-    // Render up to 3 cards from current position
     const visibleCount = Math.min(3, profiles.length);
-
-    for (let i = visibleCount - 1; i >= 0; i--) {
-      const profile = profiles[i];
-      const card = buildCard(profile, i);
-      deck.appendChild(card);
+    for (var i = visibleCount - 1; i >= 0; i--) {
+      deck.appendChild(buildCard(profiles[i], i));
     }
 
-    // Attach drag events to top card
     attachSwipeEvents(deck.querySelector('.dog-card.top-card'));
   }
 
-  /**
-   * Create a card DOM element for a given profile.
-   * @param {Object} profile
-   * @param {number} stackIndex — 0 = top card
-   */
   function buildCard(profile, stackIndex) {
     const card = document.createElement('div');
     card.className = 'dog-card' + (stackIndex === 0 ? ' top-card' : '');
     card.dataset.userId = profile.id;
     card.style.zIndex = 100 - stackIndex;
 
-    // Slight scale + offset to show stack depth
-    if (stackIndex === 1) {
-      card.style.transform = 'scale(0.97) translateY(8px)';
-    } else if (stackIndex === 2) {
-      card.style.transform = 'scale(0.94) translateY(16px)';
-    }
+    if (stackIndex === 1) card.style.transform = 'scale(0.97) translateY(8px)';
+    if (stackIndex === 2) card.style.transform = 'scale(0.94) translateY(16px)';
 
-    const dog  = profile.dog || {};
     const emoji = dogEmojis[Math.floor(Math.random() * dogEmojis.length)];
 
-    card.innerHTML = `
-      <!-- Swipe hint labels (shown while dragging) -->
-      <span class="swipe-hint swipe-hint-sniff" aria-hidden="true">SNIFF</span>
-      <span class="swipe-hint swipe-hint-skip"  aria-hidden="true">SKIP</span>
-
-      <!-- Dog image placeholder -->
-      <div class="dog-card-image" role="img" aria-label="${escapeHTML(dog.name || 'Dog')} photo">
-    ${dog.photo
-    ? `<img src="${escapeHTML(dog.photo)}" alt="${escapeHTML(dog.name || 'Dog')}" style="width:100%;height:100%;object-fit:cover;" />`
-    : `<span aria-hidden="true">${emoji}</span>`
-    }
-    </div>
-
-      <div class="dog-card-body">
-        <div class="dog-card-name">${escapeHTML(dog.name || 'Unknown')}</div>
-        <div class="dog-card-meta">
-          ${escapeHTML(dog.age || '?')} year${dog.age === '1' ? '' : 's'} old
-          &bull; ${escapeHTML(dog.breed || 'Mixed breed')}
-          &bull; ${escapeHTML(profile.location || '')}
-        </div>
-
-        ${dog.aboutDog
-          ? `<p class="dog-card-desc">${escapeHTML(dog.aboutDog)}</p>`
-          : ''}
-
-        <div class="dog-card-tags">
-          ${dog.size        ? `<span class="tag">${escapeHTML(dog.size)}</span>` : ''}
-          ${dog.energyLevel ? `<span class="tag tag-secondary">${escapeHTML(dog.energyLevel)} Energy</span>` : ''}
-          ${dog.personality ? `<span class="tag">${escapeHTML(dog.personality)}</span>` : ''}
-        </div>
-
-        <div class="dog-card-owner">
-          <span aria-hidden="true">👤</span>
-          <span>${escapeHTML(profile.username || profile.name || 'Owner')}
-            ${profile.aboutOwner
-              ? ' &ndash; ' + escapeHTML(profile.aboutOwner.slice(0, 60)) + (profile.aboutOwner.length > 60 ? '…' : '')
-              : ''}
-          </span>
-        </div>
-      </div>
-    `;
+    card.innerHTML =
+      '<span class="swipe-hint swipe-hint-sniff" aria-hidden="true">SNIFF</span>' +
+      '<span class="swipe-hint swipe-hint-skip"  aria-hidden="true">SKIP</span>' +
+      '<div class="dog-card-image" role="img" aria-label="' + esc(profile.dog_name || 'Dog') + ' photo">' +
+        (profile.photo
+          ? '<img src="' + esc(profile.photo) + '" alt="' + esc(profile.dog_name || 'Dog') + '" style="width:100%;height:100%;object-fit:cover;" />'
+          : '<span aria-hidden="true">' + emoji + '</span>') +
+      '</div>' +
+      '<div class="dog-card-body">' +
+        '<div class="dog-card-name">' + esc(profile.dog_name || 'Unknown') + '</div>' +
+        '<div class="dog-card-meta">' +
+          esc(profile.dog_age || '?') + ' yr' + (profile.dog_age === 1 ? '' : 's') +
+          (profile.breed_name ? ' &bull; ' + esc(profile.breed_name) : '') +
+          (profile.location_city ? ' &bull; ' + esc(profile.location_city) : '') +
+        '</div>' +
+        (profile.about_dog ? '<p class="dog-card-desc">' + esc(profile.about_dog) + '</p>' : '') +
+        '<div class="dog-card-tags">' +
+          (profile.size_name    ? '<span class="tag">' + esc(profile.size_name) + '</span>' : '') +
+          (profile.energy_name  ? '<span class="tag tag-secondary">' + esc(profile.energy_name) + ' Energy</span>' : '') +
+          (profile.personality_name ? '<span class="tag">' + esc(profile.personality_name) + '</span>' : '') +
+        '</div>' +
+        '<div class="dog-card-owner">' +
+          '<span aria-hidden="true">👤</span> ' +
+          esc(profile.username || profile.name || 'Owner') +
+          (profile.about_owner ? ' &ndash; ' + esc(profile.about_owner.slice(0, 60)) + (profile.about_owner.length > 60 ? '…' : '') : '') +
+        '</div>' +
+      '</div>';
 
     return card;
   }
 
-  /* ====================================================
-     BUTTON EVENTS: Sniff & Skip
-     ==================================================== */
+  // ---- button actions ----
 
-  btnSniff.addEventListener('click', function () {
-    handleAction('sniff');
-  });
+  btnSniff.addEventListener('click', function () { handleAction('like'); });
+  btnSkip.addEventListener('click',  function () { handleAction('skip'); });
 
-  btnSkip.addEventListener('click', function () {
-    handleAction('skip');
-  });
-
-  /**
-   * Core action handler — called by button OR drag-to-swipe.
-   * @param {'sniff'|'skip'} action
-   */
   function handleAction(action) {
     if (profiles.length === 0) return;
-
     const topCard = deck.querySelector('.dog-card.top-card');
     if (!topCard) return;
 
-    const userId = topCard.dataset.userId;
-
-    // Animate swipe
-    if (action === 'sniff') {
-      topCard.classList.add('swiping-right');
-    } else {
-      topCard.classList.add('swiping-left');
-    }
-
-    // Wait for animation then process
+    topCard.classList.add(action === 'like' ? 'swiping-right' : 'swiping-left');
     topCard.addEventListener('animationend', function () {
-      processAction(action, userId);
+      processAction(action, parseInt(topCard.dataset.userId));
     }, { once: true });
   }
 
-  /**
-   * Record the action in data layer, then advance the deck.
-   */
-  function processAction(action, userId) {
-    if (action === 'sniff') {
-      const isMatch = sniffUser(userId);
-      if (isMatch) {
-        showMatchModal(userId);
-      }
-    } else {
-      skipUser(userId);
-    }
+  function processAction(action, targetUserId) {
+    const profile = profiles.find(function (p) { return p.id === targetUserId; });
 
-    // Remove from local profiles array and re-render
-    profiles = profiles.filter(function (p) { return p.id !== userId; });
+    fetch('/likes', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'X-User-Id': String(userId) },
+      body:    JSON.stringify({ liked_id: targetUserId, action: action })
+    })
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data.match && profile) {
+        showMatchModal(profile);
+      }
+    });
+
+    profiles = profiles.filter(function (p) { return p.id !== targetUserId; });
     renderCards();
   }
 
-  /* ====================================================
-     DRAG / SWIPE EVENTS (touch & mouse)
-     ==================================================== */
+  // ---- match modal ----
 
-  let dragStartX = 0;
-  let dragCurrentX = 0;
-  let isDragging = false;
-  const SWIPE_THRESHOLD = 80; // px to trigger a swipe
+  function showMatchModal(profile) {
+    matchText.textContent = "It's a match with " + (profile.name || profile.username) + '!';
+    matchContact.innerHTML =
+      '<div class="match-contact-row">' +
+        '<div aria-hidden="true"><img src="../images/contact.png" alt="Phone" style="width:30px;height:30px;object-fit:contain;" /></div>' +
+        '<span>Check your matches page for their contact info.</span>' +
+      '</div>';
+    matchModal.hidden = false;
+  }
+
+  modalClose.addEventListener('click', function () { matchModal.hidden = true; });
+  matchModal.addEventListener('click', function (e) { if (e.target === matchModal) matchModal.hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') matchModal.hidden = true; });
+
+  // ---- drag / swipe ----
+
+  var dragStartX = 0, dragCurrentX = 0, isDragging = false;
+  var SWIPE_THRESHOLD = 80;
 
   function attachSwipeEvents(card) {
     if (!card) return;
-
-    /* Mouse events */
     card.addEventListener('mousedown', onDragStart);
     document.addEventListener('mousemove', onDragMove);
     document.addEventListener('mouseup', onDragEnd);
-
-    /* Touch events */
     card.addEventListener('touchstart', onDragStart, { passive: true });
     document.addEventListener('touchmove', onDragMove, { passive: true });
     document.addEventListener('touchend', onDragEnd);
   }
 
-  function getClientX(e) {
-    return e.touches ? e.touches[0].clientX : e.clientX;
-  }
+  function getClientX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
 
-  function onDragStart(e) {
-    isDragging = true;
-    dragStartX = getClientX(e);
-    dragCurrentX = dragStartX;
-  }
+  function onDragStart(e) { isDragging = true; dragStartX = dragCurrentX = getClientX(e); }
 
   function onDragMove(e) {
     if (!isDragging) return;
-
     dragCurrentX = getClientX(e);
-    const delta = dragCurrentX - dragStartX;
-    const card  = deck.querySelector('.dog-card.top-card');
+    var card = deck.querySelector('.dog-card.top-card');
     if (!card) return;
-
-    const rotation = delta * 0.08; // slight tilt
-
-    card.style.transform = `translateX(${delta}px) rotate(${rotation}deg)`;
+    var delta = dragCurrentX - dragStartX;
+    card.style.transform = 'translateX(' + delta + 'px) rotate(' + (delta * 0.08) + 'deg)';
     card.style.transition = 'none';
-
-    // Show hint labels
-    const sniffHint = card.querySelector('.swipe-hint-sniff');
-    const skipHint  = card.querySelector('.swipe-hint-skip');
+    var ratio = Math.min(Math.abs(delta) / SWIPE_THRESHOLD, 1);
+    var sniffHint = card.querySelector('.swipe-hint-sniff');
+    var skipHint  = card.querySelector('.swipe-hint-skip');
     if (sniffHint && skipHint) {
-      const ratio = Math.min(Math.abs(delta) / SWIPE_THRESHOLD, 1);
-      if (delta > 0) {
-        sniffHint.style.opacity = ratio;
-        skipHint.style.opacity  = 0;
-      } else {
-        skipHint.style.opacity  = ratio;
-        sniffHint.style.opacity = 0;
-      }
+      sniffHint.style.opacity = delta > 0 ? ratio : 0;
+      skipHint.style.opacity  = delta < 0 ? ratio : 0;
     }
   }
 
   function onDragEnd() {
     if (!isDragging) return;
     isDragging = false;
-
-    const card = deck.querySelector('.dog-card.top-card');
+    var card = deck.querySelector('.dog-card.top-card');
     if (!card) return;
-
-    const delta = dragCurrentX - dragStartX;
+    var delta = dragCurrentX - dragStartX;
     card.style.transition = '';
-
-    if (delta > SWIPE_THRESHOLD) {
-      handleAction('sniff');
-    } else if (delta < -SWIPE_THRESHOLD) {
-      handleAction('skip');
-    } else {
-      // Snap back to center
+    if      (delta >  SWIPE_THRESHOLD) { handleAction('like'); }
+    else if (delta < -SWIPE_THRESHOLD) { handleAction('skip'); }
+    else {
       card.style.transform = '';
-      const sniffHint = card.querySelector('.swipe-hint-sniff');
-      const skipHint  = card.querySelector('.swipe-hint-skip');
+      var sniffHint = card.querySelector('.swipe-hint-sniff');
+      var skipHint  = card.querySelector('.swipe-hint-skip');
       if (sniffHint) sniffHint.style.opacity = 0;
       if (skipHint)  skipHint.style.opacity  = 0;
     }
   }
 
-  /* ====================================================
-     MATCH MODAL
-     ==================================================== */
-
-  function showMatchModal(userId) {
-    const matched = getAllUsers().find(function (u) { return u.id === userId; });
-    if (!matched) return;
-
-    matchText.textContent = 'You matched with ' + (matched.name || matched.username) + '!';
-
-    matchContact.innerHTML = `
-      <div class="match-contact-row">
-        <div aria-hidden="true"><img src="../images/contact.png" alt="Phone icon" style="width:30px; height:30px;" /></div>
-        <span>${escapeHTML(matched.phone || 'Contact info available in Matches')}</span>
-      </div>
-    `;
-
-    matchModal.hidden = false;
-    matchModal.focus();
-  }
-
-  // Close modal on button click
-  modalClose.addEventListener('click', function () {
-    matchModal.hidden = true;
-  });
-
-  // Close modal on overlay click (outside box)
-  matchModal.addEventListener('click', function (e) {
-    if (e.target === matchModal) {
-      matchModal.hidden = true;
-    }
-  });
-
-  // Close modal on Escape key
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && !matchModal.hidden) {
-      matchModal.hidden = true;
-    }
-  });
-
-  /* ====================================================
-     NO MORE CARDS STATE
-     ==================================================== */
+  // ---- no more cards ----
 
   function showNoMore() {
     deck.hidden = true;
@@ -325,21 +211,13 @@ document.addEventListener('DOMContentLoaded', function () {
     swipeActions.style.display = 'none';
   }
 
-  /* ====================================================
-     INIT
-     ==================================================== */
+  // ---- utility ----
 
-  renderCards();
-
-  /* ---- Utility: safely escape HTML to prevent XSS ---- */
-  function escapeHTML(str) {
+  function esc(str) {
     if (!str) return '';
     return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
   }
 
 });

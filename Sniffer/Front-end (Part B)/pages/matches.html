@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sniffer || My Matches</title>
+  <link rel="icon" type="image/png" href="../images/heart-paw-for-tab.png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/matches.css" />
 </head>
@@ -11,7 +12,7 @@
 
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="container">
-      <a href="home.html" class="navbar-brand" aria-label="Sniffer home">
+      <a href="/" class="navbar-brand" aria-label="Sniffer home">
         <span class="brand-paw" aria-hidden="true"><img src="../images/heart-paw-yellow.png" alt="Sniffer paw icon" class="brand-logo"/></span>
         Sniffer
       </a>
@@ -19,12 +20,12 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" role="list">
-        <li><a href="home.html">Discover</a></li>
-        <li><a href="matches.html" class="active">My Matches</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="availability.html">Availability</a></li>
-        <li><a href="recommendations.html">Community</a></li>
-        <li><a href="login.html" id="nav-logout-link">Log Out</a></li>
+        <li><a href="/">Discover</a></li>
+        <li><a href="/matches" class="active">My Matches</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/availability">Availability</a></li>
+        <li><a href="/recommendations">Community</a></li>
+        <li><a href="/logout" id="nav-logout-link">Log Out</a></li>
       </ul>
     </div>
   </nav>
@@ -47,7 +48,7 @@
         <span class="no-matches-icon" aria-hidden="true">🐾</span>
         <h3>No matches yet</h3>
         <p>Keep swiping on the Discover page to find your first match!</p>
-        <a href="home.html" class="btn btn-primary">Start Swiping</a>
+        <a href="/" class="btn btn-primary">Start Swiping</a>
       </div>
 
     </div>
@@ -57,8 +58,8 @@
     <div class="container">
       <span class="footer-brand">Sniffer</span>
       <nav class="footer-links" aria-label="Footer navigation">
-        <a href="home.html">Discover</a>
-        <a href="recommendations.html">Community</a>
+        <a href="/">Discover</a>
+        <a href="/recommendations">Community</a>
       </nav>
     </div>
     <div class="container">
@@ -74,6 +75,21 @@
     <div class="modal-box animate-in" id="match-detail-content">
       <!-- Populated by JS -->
     </div>
+  </div>
+
+  <!-- Availability popup -->
+  <div class="modal-overlay" id="avail-modal" role="dialog" aria-modal="true" hidden>
+    <div class="modal-box animate-in" style="max-width:560px; display:flex; flex-direction:column; min-height:360px;">
+      <h2 id="avail-modal-title" style="margin-bottom:var(--space-sm); color:var(--color-accent);"></h2>
+      <p style="font-size:0.88rem; color:var(--color-text-muted); margin-bottom:var(--space-lg);">When this owner is available for meetups</p>
+      <div id="avail-modal-slots" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap:var(--space-md); align-content:start; flex:1;"></div>
+      <button class="btn btn-outline btn-block" id="close-avail-modal" style="margin-top:var(--space-xl); flex-shrink:0;">Close</button>
+    </div>
+  </div>
+
+  <!-- Full-image lightbox -->
+  <div class="img-lightbox" id="img-lightbox" hidden>
+    <img id="img-lightbox-src" src="" alt="Dog photo" />
   </div>
 
   <script src="../js/data.js"></script>

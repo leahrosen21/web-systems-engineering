@@ -218,6 +218,15 @@ function validateForm(rules) {
   return allValid;
 }
 
+/**
+ * Validate that a field contains only English (ASCII) characters.
+ */
+function validateEnglishOnly(value) {
+  if (!value) return null;
+  if (/[^\x00-\x7F]/.test(value)) return 'Please use English characters only.';
+  return null;
+}
+
 // Username validation
 function validateUsername(value) {
   if (!value || value.trim() === '') {

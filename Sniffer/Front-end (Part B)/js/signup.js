@@ -60,9 +60,10 @@ document.addEventListener('DOMContentLoaded', function () {
   populateSelect("dog-play",          "/play_styles",         "name", "Select play style",      false,     "id");
   populateSelect("dog-compat",        "/compatibility_types", "name", "Select compatibility",   false,     "id");
   populateSelect("dog-gender",        "/genders",             "name", "Select gender",          false,     "id");
-  populateSelect("pref-size",         "/sizes",               "name", null,                     false,     "id");
+  populateSelect("pref-size",         "/sizes",               "name", null,                     true,      "id");
   populateSelect("pref-personality",  "/personalities",       "name", null,                     false,     "id");
   populateSelect("pref-interaction",  "/interaction_types",   "name", null,                     false,     "id");
+  populateSelect("pref-location",     "/locations",           "city", null,                     false,     "id");
 
   /* ---- Field references ---- */
   const form          = document.getElementById('signup-form');
@@ -73,6 +74,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const emailField    = document.getElementById('email');
   const passField     = document.getElementById('password');
   const confirmField  = document.getElementById('confirm-password');
+  const nameField     = document.getElementById('name');
   const ageField      = document.getElementById('age');
   const locationField = document.getElementById('location');
   const phoneField    = document.getElementById('phone');
@@ -89,16 +91,14 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ---- Real-time validators ---- */
-  attachValidator(usernameField, function (v) { return validateRequired(v, 'Username'); });
-  attachValidator(emailField,    validateEmail);
+  attachValidator(usernameField, function (v) { return validateRequired(v, 'Username') || validateEnglishOnly(v); });
+  attachValidator(emailField,    function (v) { return validateEmail(v) || validateEnglishOnly(v); });
   attachValidator(passField,     validatePassword);
   attachValidator(confirmField,  function (v) { return validatePasswordMatch(passField.value, v); });
   attachValidator(phoneField,    validatePhone);
   attachValidator(dogNameField,  function (v) { return validateRequired(v, "Dog's name"); });
-  attachValidator(ageField, function (v) {
-    if (!v) return null;
-    return validateAge(v, false);
-  });
+  attachValidator(nameField, function (v) { return validateRequired(v, 'Full name'); });
+  attachValidator(ageField,  function (v) { return validateRequired(v, 'Age') || validateAge(v, false); });
   attachValidator(dogAgeField, function (v) {
     return validateRequired(v, "Dog's age") || validateAge(v, true);
   });
@@ -186,14 +186,12 @@ document.addEventListener('DOMContentLoaded', function () {
       ]);
     }
     if (n === 2) {
-      const rules = [
+      return validateForm([
+        { field: nameField,     validator: function (v) { return validateRequired(v, 'Full name'); } },
+        { field: ageField,      validator: function (v) { return validateRequired(v, 'Age') || validateAge(v, false); } },
         { field: locationField, validator: function (v) { return validateRequired(v, 'Location'); } },
         { field: phoneField,    validator: validatePhone },
-      ];
-      if (ageField.value) {
-        rules.push({ field: ageField, validator: function (v) { return validateAge(v, false); } });
-      }
-      return validateForm(rules);
+      ]);
     }
     if (n === 3) {
       return validateForm([
@@ -210,6 +208,36 @@ document.addEventListener('DOMContentLoaded', function () {
       errorBanner.hidden = false;
       return;
     }
+
+    if (currentStep === 1) {
+      var email    = emailField.value.trim();
+      var username = usernameField.value.trim();
+      fetch('/check-availability?email=' + encodeURIComponent(email) + '&username=' + encodeURIComponent(username))
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data.usernameTaken) {
+            showFieldError(usernameField, 'That username is already taken.');
+            errorBanner.textContent = 'Please fix the errors above before continuing.';
+            errorBanner.hidden = false;
+            return;
+          }
+          if (data.emailTaken) {
+            showFieldError(emailField, 'An account with that email already exists.');
+            errorBanner.textContent = 'Please fix the errors above before continuing.';
+            errorBanner.hidden = false;
+            return;
+          }
+          currentStep++;
+          showStep(currentStep);
+        })
+        .catch(function () {
+          // if the check fails, allow proceeding — server will catch it at submit
+          currentStep++;
+          showStep(currentStep);
+        });
+      return;
+    }
+
     currentStep++;
     showStep(currentStep);
   });
@@ -220,17 +248,18 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   /* ---- Form submit ---- */
+  // only block submission if client-side validation fails
+  // if valid, form submits naturally to action="/signup"
   form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    errorBanner.hidden   = true;
-    successBanner.hidden = true;
+    errorBanner.hidden = true;
 
     const valid = validateForm([
       { field: usernameField, validator: function (v) { return validateRequired(v, 'Username'); } },
       { field: emailField,    validator: validateEmail },
       { field: passField,     validator: validatePassword },
       { field: confirmField,  validator: function (v) { return validatePasswordMatch(passField.value, v); } },
+      { field: nameField,     validator: function (v) { return validateRequired(v, 'Full name'); } },
+      { field: ageField,      validator: function (v) { return validateRequired(v, 'Age') || validateAge(v, false); } },
       { field: locationField, validator: function (v) { return validateRequired(v, 'Location'); } },
       { field: phoneField,    validator: validatePhone },
       { field: dogNameField,  validator: function (v) { return validateRequired(v, "Dog's name"); } },
@@ -238,60 +267,28 @@ document.addEventListener('DOMContentLoaded', function () {
     ]);
 
     if (!valid) {
+      e.preventDefault();
       errorBanner.textContent = 'Please fix the errors above before continuing.';
       errorBanner.hidden = false;
       return;
     }
-
-    const newUser = {
-      username:    usernameField.value.trim(),
-      email:       emailField.value.trim(),
-      password:    passField.value,
-      name:        document.getElementById('name').value.trim(),
-      age:         ageField.value.trim(),
-      gender:      document.getElementById('gender').value,
-      location:    locationField.value.trim(),
-      phone:       phoneField.value.replace(/[\s\-]/g, ''),
-      aboutOwner:  document.getElementById('about-owner').value.trim(),
-      dog: {
-        name:          dogNameField.value.trim(),
-        age:           dogAgeField.value.trim(),
-        breed:         document.getElementById('dog-breed').value,
-        size:          document.getElementById('dog-size').value,
-        gender:        document.getElementById('dog-gender').value,
-        energyLevel:   document.getElementById('dog-energy').value,
-        personality:   document.getElementById('dog-personality').value,
-        compatibility: document.getElementById('dog-compat').value,
-        vaccinated:    document.getElementById('dog-vaccinated').value,
-        playStyle:     document.getElementById('dog-play').value,
-        aboutDog:      document.getElementById('dog-about').value.trim(),
-      },
-      preferences: {
-        size:        document.getElementById('pref-size').value,
-        personality: document.getElementById('pref-personality').value,
-        interaction: document.getElementById('pref-interaction').value,
-      },
-      alwaysMatches: false,
-    };
-
-    const success = registerUser(newUser);
-
-    if (!success) {
-      errorBanner.textContent = 'An account with that email already exists. Try logging in.';
-      errorBanner.hidden = false;
-      emailField.classList.add('error');
-      return;
-    }
-
-    setCurrentUser(newUser);
-    successBanner.hidden = false;
-    form.style.opacity = '0.5';
-    form.style.pointerEvents = 'none';
-
-    setTimeout(function () {
-      window.location.href = 'home.html';
-    }, 1500);
+    // valid — let the form submit naturally
   });
 
+  // showStep must run first because it resets errorBanner.hidden = true
   showStep(1);
+
+  // show server-side error AFTER showStep so it isn't wiped out
+  var params = new URLSearchParams(window.location.search);
+  var serverError = params.get('error');
+  if (serverError === 'email') {
+    errorBanner.textContent = 'An account with that email already exists.';
+    errorBanner.hidden = false;
+  } else if (serverError === 'username') {
+    errorBanner.textContent = 'That username is already taken.';
+    errorBanner.hidden = false;
+  } else if (serverError === 'server') {
+    errorBanner.textContent = 'Something went wrong. Please try again.';
+    errorBanner.hidden = false;
+  }
 });

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sniffer || My Profile</title>
+  <link rel="icon" type="image/png" href="../images/heart-paw-for-tab.png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/profile.css" />
 </head>
@@ -12,7 +13,7 @@
   <!-- ===== NAVBAR ===== -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="container">
-      <a href="home.html" class="navbar-brand" aria-label="Sniffer home">
+      <a href="/" class="navbar-brand" aria-label="Sniffer home">
         <span class="brand-paw" aria-hidden="true"><img src="../images/heart-paw-yellow.png" alt="Sniffer paw icon" class="brand-logo"/></span>
         Sniffer
       </a>
@@ -20,12 +21,12 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" role="list">
-        <li><a href="home.html">Discover</a></li>
-        <li><a href="matches.html">My Matches</a></li>
-        <li><a href="profile.html" class="active">Profile</a></li>
-        <li><a href="availability.html">Availability</a></li>
-        <li><a href="recommendations.html">Community</a></li>
-        <li><a href="login.html" id="nav-logout-link">Log Out</a></li>
+        <li><a href="/">Discover</a></li>
+        <li><a href="/matches">My Matches</a></li>
+        <li><a href="/profile" class="active">Profile</a></li>
+        <li><a href="/availability">Availability</a></li>
+        <li><a href="/recommendations">Community</a></li>
+        <li><a href="/logout" id="nav-logout-link">Log Out</a></li>
       </ul>
     </div>
   </nav>
@@ -52,9 +53,12 @@
               <p id="view-dog-meta" class="profile-meta"></p>
               <div class="profile-tags" id="view-dog-tags"></div>
             </div>
-            <button class="btn btn-primary" id="btn-edit" aria-label="Edit your profile">
-              Edit Profile
-            </button>
+            <div style="display:flex; flex-direction:column; gap: var(--space-sm); align-items:flex-end; align-self:center; min-width:160px;">
+              <button class="btn btn-primary" id="btn-edit" aria-label="Edit your profile" style="width:100%;">
+                Edit Profile
+              </button>
+              <a href="/availability" class="btn btn-primary" style="width:100%; text-align:center;">My Availability</a>
+            </div>
           </div>
         </div>
 
@@ -77,7 +81,7 @@
           <div class="card animate-in animate-in-delay-2">
             <div class="card-body">
               <h3 class="card-section-title">
-                <span aria-hidden="true">👤</span> Owner Info
+                <span aria-hidden="true">👤</span> About Me
               </h3>
               <dl class="profile-details" id="view-owner-details">
                 <!-- Populated by JS -->
@@ -99,6 +103,18 @@
           </div>
 
         </div>
+        <!-- Account actions -->
+        <div class="card animate-in" style="margin-top:var(--space-lg); text-align:center;">
+          <div class="card-body">
+            <h3 class="card-section-title" style="justify-content:center;">⚙️ Account Settings</h3>
+            <p id="pause-status-msg" style="font-size:0.95rem; color:var(--color-text-muted); margin-bottom:var(--space-md);"></p>
+            <div style="display:flex; gap:var(--space-md); justify-content:center; flex-wrap:wrap;">
+              <button class="btn btn-outline" id="btn-pause-account">⏸ Pause Account</button>
+              <button class="btn" id="btn-delete-account" style="background:#b00020; color:#fff; border:none;">🗑 Delete Account</button>
+            </div>
+          </div>
+        </div>
+
       </div><!-- /view-mode -->
 
       <!-- ===== EDIT MODE ===== -->
@@ -116,8 +132,7 @@
               <h3 class="card-section-title">
                 <span aria-hidden="true">🐕</span> Dog Profile
               </h3>
-              
-                 <!-- Photo upload -->
+
               <div class="form-group">
                 <label class="form-label" for="edit-dog-photo">Dog's Photo</label>
                 <input class="form-control" type="file" id="edit-dog-photo" accept="image/*" />
@@ -140,67 +155,69 @@
               <div class="form-grid-2">
                 <div class="form-group">
                   <label class="form-label" for="edit-dog-breed">Breed</label>
-                  <input class="form-control" type="text" id="edit-dog-breed" />
+                  <select class="form-control" id="edit-dog-breed">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-dog-size">Size</label>
                   <select class="form-control" id="edit-dog-size">
-                    <option value="">Select</option>
-                    <option value="Small">Small</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Large">Large</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-dog-gender">Dog's Gender</label>
+                  <select class="form-control" id="edit-dog-gender">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-dog-energy">Energy Level</label>
                   <select class="form-control" id="edit-dog-energy">
-                    <option value="">Select</option>
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="edit-dog-personality">Personality</label>
-                  <select class="form-control" id="edit-dog-personality">
-                    <option value="">Select</option>
-                    <option value="Friendly">Friendly</option>
-                    <option value="Playful">Playful</option>
-                    <option value="Calm">Calm</option>
-                    <option value="Curious">Curious</option>
-                    <option value="Shy">Shy</option>
-                    <option value="Adventurous">Adventurous</option>
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label class="form-label" for="edit-dog-vaccinated">Vaccination Status</label>
-                  <select class="form-control" id="edit-dog-vaccinated">
-                    <option value="">Select</option>
-                    <option value="Yes">Yes</option>
-                    <option value="Partial">Partial</option>
-                    <option value="No">No</option>
+                  <label class="form-label" for="edit-dog-personality">Personality</label>
+                  <select class="form-control" id="edit-dog-personality">
+                    <option value="" disabled selected>Loading...</option>
                   </select>
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-dog-play">Play Style</label>
                   <select class="form-control" id="edit-dog-play">
-                    <option value="">Select</option>
-                    <option value="Indoor">Indoor</option>
-                    <option value="Outdoor">Outdoor</option>
-                    <option value="Both">Both</option>
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-dog-compat">Compatibility With</label>
+                  <select class="form-control" id="edit-dog-compat">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-dog-vaccinated">Vaccination Status</label>
+                  <select class="form-control" id="edit-dog-vaccinated">
+                    <option value="" disabled selected>Select</option>
+                    <option value="Yes">Yes — fully vaccinated</option>
+                    <option value="Partial">Partially vaccinated</option>
+                    <option value="No">Not vaccinated</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="edit-dog-about">About Your Dog</label>
-                <textarea class="form-control" id="edit-dog-about" rows="4"></textarea>
+                <textarea class="form-control" id="edit-dog-about" rows="3"></textarea>
               </div>
             </div>
           </div>
@@ -214,14 +231,33 @@
 
               <div class="form-grid-2">
                 <div class="form-group">
-                  <label class="form-label" for="edit-location">Location <span class="required-star">*</span></label>
-                  <input class="form-control" type="text" id="edit-location" required />
-                  <span class="error-message" role="alert"></span>
+                  <label class="form-label" for="edit-name">Full Name</label>
+                  <input class="form-control" type="text" id="edit-name" />
                 </div>
                 <div class="form-group">
                   <label class="form-label" for="edit-age">Your Age</label>
-                  <input class="form-control" type="number" id="edit-age" min="18" />
+                  <input class="form-control" type="number" id="edit-age" min="18" max="120" />
                 </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-location">Location</label>
+                  <select class="form-control" id="edit-location">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-phone">Phone</label>
+                  <input class="form-control" type="tel" id="edit-phone" placeholder="05X-XXXXXXX" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="edit-gender">Gender</label>
+                <select class="form-control" id="edit-gender">
+                  <option value="" disabled selected>Loading...</option>
+                </select>
               </div>
 
               <div class="form-group">
@@ -231,13 +267,48 @@
             </div>
           </div>
 
+          <!-- Preferences section -->
+          <div class="card" style="margin-bottom: var(--space-lg);">
+            <div class="card-body">
+              <h3 class="card-section-title">
+                <span aria-hidden="true">🔍</span> Matching Preferences
+              </h3>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-pref-size">Preferred Dog Size</label>
+                  <select class="form-control" id="edit-pref-size">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-pref-interaction">Type of Meetup</label>
+                  <select class="form-control" id="edit-pref-interaction">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label" for="edit-pref-personality">Preferred Personality</label>
+                  <select class="form-control" id="edit-pref-personality">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="edit-pref-location">Preferred Location</label>
+                  <select class="form-control" id="edit-pref-location">
+                    <option value="" disabled selected>Loading...</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-lg" id="btn-save">
-              Save Changes
-            </button>
-            <button type="button" class="btn btn-outline btn-lg" id="btn-cancel-2">
-              Cancel
-            </button>
+            <button type="submit" class="btn btn-primary btn-lg" id="btn-save">Save Changes</button>
+            <button type="button" class="btn btn-outline btn-lg" id="btn-cancel-2">Cancel</button>
           </div>
 
         </form>
@@ -251,9 +322,9 @@
     <div class="container">
       <span class="footer-brand">Sniffer</span>
       <nav class="footer-links" aria-label="Footer navigation">
-        <a href="home.html">Discover</a>
-        <a href="matches.html">Matches</a>
-        <a href="recommendations.html">Community</a>
+        <a href="/">Discover</a>
+        <a href="/matches">Matches</a>
+        <a href="/recommendations">Community</a>
       </nav>
     </div>
     <div class="container">
@@ -262,6 +333,11 @@
     </p>
       </div>
   </footer>
+
+  <!-- Photo lightbox -->
+  <div id="profile-lightbox" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:3000; align-items:center; justify-content:center; cursor:zoom-out;">
+    <img id="profile-lightbox-img" src="" alt="Dog photo" style="max-width:90vw; max-height:90vh; border-radius:16px; object-fit:contain; box-shadow:0 8px 40px rgba(0,0,0,0.5);" />
+  </div>
 
   <script src="../js/data.js"></script>
   <script src="../js/validation.js"></script>

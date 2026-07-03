@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title> Sniffer || My Availability</title>
+  <link rel="icon" type="image/png" href="../images/heart-paw-for-tab.png" />
   <link rel="stylesheet" href="../css/style.css" />
   <link rel="stylesheet" href="../css/availability.css" />
 </head>
@@ -11,7 +12,7 @@
 
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="container">
-      <a href="home.html" class="navbar-brand" aria-label="Sniffer home">
+      <a href="/" class="navbar-brand" aria-label="Sniffer home">
         <span class="brand-paw" aria-hidden="true"><img src="../images/heart-paw-yellow.png" alt="Sniffer paw icon" class="brand-logo"/></span>
         Sniffer
       </a>
@@ -19,12 +20,12 @@
         <span></span><span></span><span></span>
       </button>
       <ul class="nav-links" role="list">
-        <li><a href="home.html">Discover</a></li>
-        <li><a href="matches.html">My Matches</a></li>
-        <li><a href="profile.html">Profile</a></li>
-        <li><a href="availability.html" class="active">Availability</a></li>
-        <li><a href="recommendations.html">Community</a></li>
-        <li><a href="login.html" id="nav-logout-link">Log Out</a></li>
+        <li><a href="/">Discover</a></li>
+        <li><a href="/matches">My Matches</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/availability" class="active">Availability</a></li>
+        <li><a href="/recommendations">Community</a></li>
+        <li><a href="/logout" id="nav-logout-link">Log Out</a></li>
       </ul>
     </div>
   </nav>
@@ -48,9 +49,7 @@
         <!-- ===== ADD SLOT FORM ===== -->
         <div class="card avail-form-card">
           <div class="card-body">
-            <h3 class="avail-form-title">
-              <span aria-hidden="true">+</span> Add Time Slot
-            </h3>
+            <h3 class="avail-form-title" id="avail-form-title">Add Time Slot</h3>
 
             <form id="avail-form" novalidate aria-label="Add availability form">
 
@@ -96,9 +95,8 @@
                 </select>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-block">
-                Add Slot
-              </button>
+              <button type="submit" class="btn btn-primary btn-block" id="avail-submit-btn">Add Slot</button>
+              <button type="button" class="btn btn-outline btn-block" id="avail-cancel-edit" hidden style="margin-top:var(--space-sm);">Cancel Edit</button>
 
             </form>
           </div>
@@ -131,9 +129,9 @@
     <div class="container">
       <span class="footer-brand">Sniffer</span>
       <nav class="footer-links" aria-label="Footer navigation">
-        <a href="home.html">Discover</a>
-        <a href="matches.html">Matches</a>
-        <a href="recommendations.html">Community</a>
+        <a href="/">Discover</a>
+        <a href="/matches">Matches</a>
+        <a href="/recommendations">Community</a>
       </nav>
     </div>
     <div class="container">
