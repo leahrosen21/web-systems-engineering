@@ -484,3 +484,4 @@ UPDATE users SET email = 'yoni@gmail.com',  password = 'YoniDalmatian1!'  WHERE 
 UPDATE users SET email = 'tamar@gmail.com', password = 'TamarMix1!'       WHERE id = 10;
 
 
+UPDATE interaction_types SET name='Any' WHERE id=3;
