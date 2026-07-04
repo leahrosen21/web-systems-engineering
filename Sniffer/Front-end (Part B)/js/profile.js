@@ -15,7 +15,7 @@
   /* ====================================================
      DROPDOWN POPULATION (same pattern as signup.js)
   ==================================================== */
-  function populateSelect(selectId, url, labelField, placeholder, valueField, anyOption) {
+  function populateSelect(selectId, url, labelField, placeholder, valueField, anyOption, excludeNames, onReady) {
     const select = document.getElementById(selectId);
     if (!select) return;
     select.disabled = true;
@@ -35,12 +35,14 @@
           select.appendChild(ph);
         }
         items.forEach(function (item) {
+          if (excludeNames && excludeNames.indexOf(item[labelField]) !== -1) return;
           const opt = document.createElement('option');
           opt.value       = item[valueField || labelField];
           opt.textContent = item[labelField];
           select.appendChild(opt);
         });
         select.disabled = false;
+        if (onReady) onReady(select);
       })
       .catch(function () {
         select.innerHTML = '<option value="" disabled selected>Failed to load</option>';
@@ -67,9 +69,9 @@
     populateSelect('edit-dog-personality',  '/personalities',       'name', 'Select personality',    'id');
     populateSelect('edit-dog-play',         '/play_styles',         'name', 'Select play style',     'id');
     populateSelect('edit-dog-compat',       '/compatibility_types', 'name', 'Select compatibility',  'id');
-    populateSelect('edit-pref-size',        '/sizes',               'name', null, 'id', true);
-    populateSelect('edit-pref-personality', '/personalities',       'name', null, 'id', true);
-    populateSelect('edit-pref-interaction', '/interaction_types',   'name', null, 'id', true);
+    populateSelect('edit-pref-size',        '/sizes',               'name', null, 'id');
+    populateSelect('edit-pref-personality', '/personalities',       'name', null, 'id');
+    populateSelect('edit-pref-interaction', '/interaction_types',   'name', null, 'id');
     populateSelect('edit-pref-location',    '/locations',           'city', null, 'id', true);
 
     // fetch real data from backend
@@ -89,6 +91,13 @@
     btnCancel2.addEventListener('click', closeEditMode);
     profileForm.addEventListener('submit', handleSave);
     document.getElementById('edit-dog-photo').addEventListener('change', handlePhotoPreview);
+
+    document.getElementById('edit-dog-about').addEventListener('input', function () {
+      document.getElementById('edit-dog-about-count').textContent = this.value.length + '/200';
+    });
+    document.getElementById('edit-about-owner').addEventListener('input', function () {
+      document.getElementById('edit-about-owner-count').textContent = this.value.length + '/200';
+    });
 
     const authHeaders = { 'X-User-Id': String(userId) };
 
@@ -234,6 +243,16 @@
   function openEditMode() {
     if (!profileData) return;
 
+    // account credentials
+    setVal('edit-username',         profileData.username);
+    setVal('edit-email',            profileData.email);
+    setVal('edit-new-password',     '');
+    setVal('edit-confirm-password', '');
+
+    // char counters
+    document.getElementById('edit-dog-about-count').textContent   = (profileData.about_dog    || '').length + '/200';
+    document.getElementById('edit-about-owner-count').textContent = (profileData.about_owner  || '').length + '/200';
+
     // owner fields
     setVal('edit-name',         profileData.name);
     setVal('edit-age',          profileData.age);
@@ -255,11 +274,11 @@
     setVal('edit-dog-vaccinated',  profileData.vaccinated === 1 ? 'Yes' : 'No');
     setVal('edit-dog-about',       profileData.about_dog);
 
-    // preferences
+    // preferences — DB stores real IDs (e.g. 5 for 'Any' size), set them directly
     setVal('edit-pref-size',        profileData.pref_size_id);
     setVal('edit-pref-personality', profileData.pref_personality_id);
     setVal('edit-pref-interaction', profileData.interaction_type_id);
-    setVal('edit-pref-location',    profileData.pref_location_id);
+    setVal('edit-pref-location',    profileData.pref_location_id || 'Any');
 
     // current photo preview
     const preview = document.getElementById('photo-preview');
@@ -288,6 +307,7 @@
     editMode.hidden = true;
     viewMode.hidden = false;
     hideBanners();
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   /* ====================================================
@@ -315,8 +335,39 @@
 
     const userId = getCurrentUser().user_id;
 
+    // validate username — English letters, numbers, underscores only
+    const newUsername = getVal('edit-username');
+    if (newUsername && !/^[a-zA-Z0-9_]+$/.test(newUsername)) {
+      showFieldError(document.getElementById('edit-username'), 'Username can only contain English letters, numbers, and underscores.');
+      return;
+    }
+
+    // validate email format
+    const newEmail = getVal('edit-email');
+    if (newEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+      showFieldError(document.getElementById('edit-email'), 'Please enter a valid email address.');
+      return;
+    }
+
+    // validate password
+    const newPassword     = getVal('edit-new-password');
+    const confirmPassword = getVal('edit-confirm-password');
+    if (newPassword || confirmPassword) {
+      if (newPassword.length < 6) {
+        showFieldError(document.getElementById('edit-new-password'), 'Password must be at least 6 characters.');
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        showFieldError(document.getElementById('edit-confirm-password'), 'Passwords do not match.');
+        return;
+      }
+    }
+
     // user fields (JSON)
     const userData = {};
+    if (getVal('edit-username'))     userData['username']    = getVal('edit-username');
+    if (getVal('edit-email'))        userData['email']       = getVal('edit-email');
+    if (newPassword)                 userData['password']    = newPassword;
     if (getVal('edit-name'))         userData['name']        = getVal('edit-name');
     if (getVal('edit-age'))          userData['age']         = getVal('edit-age');
     if (getVal('edit-phone'))        userData['phone']       = getVal('edit-phone');
@@ -340,12 +391,13 @@
     const photoFile = document.getElementById('edit-dog-photo').files[0];
     if (photoFile) dogData.append('dog-photos', photoFile);
 
-    // preferences fields (JSON)
-    const prefData = {};
-    if (getVal('edit-pref-size'))        prefData['pref-size']        = getVal('edit-pref-size');
-    if (getVal('edit-pref-personality')) prefData['pref-personality'] = getVal('edit-pref-personality');
-    if (getVal('edit-pref-interaction')) prefData['pref-interaction'] = getVal('edit-pref-interaction');
-    if (getVal('edit-pref-location'))    prefData['pref-location']    = getVal('edit-pref-location');
+    // preferences fields (JSON) — send IDs as-is; location 'Any' = null (no 'Any' row in locations)
+    const prefData = {
+      'pref-size':        getVal('edit-pref-size')        || null,
+      'pref-personality': getVal('edit-pref-personality') || null,
+      'pref-interaction': getVal('edit-pref-interaction') || null,
+      'pref-location':    getVal('edit-pref-location') === 'Any' ? null : (getVal('edit-pref-location') || null)
+    };
 
     Promise.all([
       fetch('/users/' + userId, {

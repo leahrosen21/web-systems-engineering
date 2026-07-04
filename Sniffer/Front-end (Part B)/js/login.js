@@ -22,7 +22,12 @@ document.addEventListener('DOMContentLoaded', function () {
     successBanner.hidden = false;
   }
 
-  attachValidator(emailField, validateEmail);
+  function validateEmailOrUsername(v) {
+    if (!v || !v.trim()) return 'Please enter your email or username.';
+    if (v.includes('@')) return validateEmail(v);
+    return null;
+  }
+  attachValidator(emailField, validateEmailOrUsername);
   attachValidator(passField, function (v) { return validateRequired(v, 'Password'); });
 
   toggleBtn.addEventListener('click', function () {
@@ -39,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
   // if valid, the form submits naturally to action="/login"
   form.addEventListener('submit', function (e) {
     const valid = validateForm([
-      { field: emailField, validator: validateEmail },
+      { field: emailField, validator: validateEmailOrUsername },
       { field: passField,  validator: function (v) { return validateRequired(v, 'Password'); } },
     ]);
     if (!valid) {
