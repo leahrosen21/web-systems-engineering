@@ -262,8 +262,8 @@ const login = function(req, res) {
 
     const { email, password } = req.body;
 
-    // finding user by email first
-    sql.query("SELECT * FROM users WHERE email = ?", [email], (err, result) => {
+    // allow login with either email or username
+    sql.query("SELECT * FROM users WHERE email = ? OR username = ?", [email, email], (err, result) => {
         if (err) {
             console.log("Error during login:", err);
             res.status(500).send("Error during login: " + err);
@@ -438,29 +438,26 @@ const editDog = function(req, res) {
     });
 };
 
-// updates matching preferences — looks up preferences by user_id
+// updates matching preferences — always writes all 4 fields; null means 'Any'
 const editPreferences = function(req, res) {
     const userId = req.params.id;
 
-    const updatedFields = {};
+    const size_id             = req.body["pref-size"]         || null;
+    const personality_id      = req.body["pref-personality"]  || null;
+    const interaction_type_id = req.body["pref-interaction"]  || null;
+    const location_id         = req.body["pref-location"]     || null;
 
-    if (req.body["pref-size"])          updatedFields.size_id              = req.body["pref-size"];
-    if (req.body["pref-personality"])   updatedFields.personality_id       = req.body["pref-personality"];
-    if (req.body["pref-interaction"])   updatedFields.interaction_type_id  = req.body["pref-interaction"];
-    if (req.body["pref-location"])      updatedFields.location_id          = req.body["pref-location"];
-
-    if (Object.keys(updatedFields).length === 0) {
-        res.status(400).send("No fields to update.");
-        return;
-    }
-
-    sql.query("UPDATE preferences SET ? WHERE user_id = ?", [updatedFields, userId], (err) => {
-        if (err) {
-            res.status(400).send("Error updating preferences: " + err);
-            return;
+    sql.query(
+        "UPDATE preferences SET size_id = ?, personality_id = ?, interaction_type_id = ?, location_id = ? WHERE user_id = ?",
+        [size_id, personality_id, interaction_type_id, location_id, userId],
+        (err) => {
+            if (err) {
+                res.status(400).send("Error updating preferences: " + err);
+                return;
+            }
+            res.send("Preferences updated successfully!");
         }
-        res.send("Preferences updated successfully!");
-    });
+    );
 };
 
 
